@@ -1,0 +1,24 @@
+{
+  "$schema": "../site-live/node_modules/wrangler/config-schema.json",
+  "name": "kolto-play",
+  "main": "index.js",
+  "compatibility_date": "2026-11-14",
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "play.kolto-labs.org",
+      "custom_domain": true
+    },
+    {
+      "pattern": "play.swkotor.org",
+      "custom_domain": true
+    },
+    {
+      "pattern": "play.swkotor.org/*",
+      "zone_name": "swkotor.org"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

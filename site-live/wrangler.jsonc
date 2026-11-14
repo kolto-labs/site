@@ -3,6 +3,13 @@
   // Static-assets-only Worker: every route is prerendered to dist/<route>/index.html.
   "name": "koltolabs",
   "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "kolto-labs.org", "custom_domain": true },
+    { "pattern": "www.kolto-labs.org", "custom_domain": true },
+    { "pattern": "swkotor.org/*", "zone_name": "swkotor.org" },
+    { "pattern": "www.swkotor.org/*", "zone_name": "swkotor.org" }
+  ],
   "assets": {
     "directory": "./dist",
     // Serves dist/404.html (with a 404 status) for unknown paths.

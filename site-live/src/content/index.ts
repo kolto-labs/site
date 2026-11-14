@@ -29,7 +29,7 @@ function withoutJoin(c: SiteContent): SiteContent {
 export const content = PAGES.join ? full : withoutJoin(full);
 
 /** Canonical origin. Single place to change after deploy (content.siteUrl wins). */
-export const SITE_URL = (content.siteUrl || 'https://swkotor.org').replace(/\/+$/, '');
+export const SITE_URL = (content.siteUrl || 'https://kolto-labs.org').replace(/\/+$/, '');
 
 export const LINKS = {
   github: 'https://github.com/kolto-labs',

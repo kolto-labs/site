@@ -1,6 +1,6 @@
 # Kolto Labs website
 
-Source for the [Kolto Labs website](https://koltolabs.bodecloud.workers.dev/).
+Source for the [Kolto Labs website](https://kolto-labs.org/).
 
 ## Run locally
 
@@ -41,3 +41,9 @@ Keep these directories together: the Vite and TypeScript configurations resolve 
 Imported on 2026-11-14 from the current local site source, including its existing uncommitted site changes. The source baseline was local commit `b0e65db`. The deployed website currently serves an older restored bundle with the suffix `r20261013-restore`; this import is not claimed to reproduce that deployment byte for byte. Importing this repository does not deploy the website.
 
 The production UI and audio source captured in local commit `00a8fdb` was subsequently restored to retain the deployed settings dialog, audio routing, and scene integration. The newer Play route and current content are retained. Source integration fixes are included; the original local archive and history are unchanged.
+
+## Domains
+
+The primary site is https://kolto-labs.org/. https://swkotor.org/ serves the same Worker and assets as a mirror. Canonical URLs, Open Graph metadata, the sitemap, robots.txt and generated share cards use kolto-labs.org. The www hostnames serve the matching site.
+
+The existing browser launcher is available at https://play.kolto-labs.org/ and mirrored at https://play.swkotor.org/. Both point to the `kolto-play` proxy configured in `play-proxy/wrangler.jsonc`, retaining the existing application upstream and paths.

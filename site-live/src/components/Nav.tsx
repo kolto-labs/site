@@ -66,7 +66,7 @@ export function KMark({ size = 22 }: { size?: number }) {
 
 export function Nav() {
   const navigate = useNavigate();
-  const { crt, toggleCrt, sound, toggleSound, music, setMusic } = usePrefs();
+  const { crt, toggleCrt, sound, activateSound, music, setMusic } = usePrefs();
 
   useEffect(() => {
     if (!USER_MEDIA_UI) return;
@@ -117,7 +117,7 @@ export function Nav() {
   const nextMusic = () => setMusic(music === 'classic' ? 'generated' : music === 'generated' && USER_MEDIA_UI ? 'media' : 'classic');
   const extra: Record<string, () => void> = {
     h: () => navigate('/'),
-    m: toggleSound,
+    m: activateSound,
     c: toggleCrt,
     s: nextMusic,
     t: () => openSiteSettings(),
@@ -127,7 +127,7 @@ export function Nav() {
   const map: Record<string, () => void> = {};
   for (const m of MENU) map[m.key] = () => navigate(hrefFor(m.to));
   Object.assign(map, extra);
-  useHotkeys(map, [navigate, toggleCrt, toggleSound]);
+  useHotkeys(map, [navigate, toggleCrt, activateSound]);
 
   return (
     <header className="bbs">
@@ -151,7 +151,7 @@ export function Nav() {
           </ul>
         </nav>
         <div className="bbs__toggles">
-          <button type="button" className="bbs__toggle" data-sound-toggle aria-pressed={sound} onClick={toggleSound} aria-keyshortcuts="M" aria-label="Sound" title="Music and UI sounds (M)">
+          <button type="button" className="bbs__toggle" data-sound-toggle aria-pressed={sound} onClick={activateSound} aria-keyshortcuts="M" aria-label="Sound" title="Music and UI sounds (M)">
             <span aria-hidden="true">♪</span>
             <span className="bbs__toggle-label">
               <span className="bbs__toggle-name bbs__toggle-name--hide-sm">Sound</span> <b>{sound ? 'ON' : 'OFF'}</b>

@@ -1,0 +1,14 @@
+{
+  "name": "@kolto/adaptive-music",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private adaptive music package for the Kolto Labs site. Never published.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "prepublishOnly": "exit 1"
+  }
+}

@@ -1,0 +1,131 @@
+/* ---------- policy + conduct: footer entries and their dialogs ---------- */
+
+.foot__policy {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-pixel);
+  font-size: var(--px-1);
+}
+.foot__policy li {
+  margin-bottom: 6px;
+}
+.foot__policy a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.foot__policy a:hover {
+  color: var(--void);
+}
+
+.policy-dialog {
+  padding: 0;
+  border: 1px solid var(--rule-hi);
+  background: var(--panel);
+  color: var(--ink);
+  width: min(760px, calc(100vw - 24px));
+  max-width: none;
+  max-height: calc(100svh - 24px);
+  overflow: hidden;
+}
+.policy-dialog[open] {
+  display: flex;
+}
+.policy-dialog::backdrop {
+  background: rgba(1, 10, 15, 0.84);
+  backdrop-filter: blur(3px);
+}
+.policy-dialog__inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100svh - 26px);
+}
+.policy-dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px clamp(16px, 4vw, 28px);
+  border-bottom: 3px double var(--rule-hi);
+  background: var(--panel-2);
+}
+.policy-dialog__title {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: var(--px-2);
+  line-height: 1.25;
+  color: var(--ink-hi);
+}
+.policy-dialog__close {
+  flex: none;
+}
+.policy-dialog__body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px clamp(16px, 4vw, 28px) 24px;
+}
+.policy-dialog__body > :first-child {
+  margin-top: 0;
+}
+.policy-dialog__body > :last-child {
+  margin-bottom: 0;
+}
+
+/* lock the page behind an open policy dialog */
+html:has(.policy-dialog[open]) {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .policy-dialog[open] {
+    animation: policy-in 160ms ease-out;
+  }
+  .policy-dialog[open]::backdrop {
+    animation: policy-fade 160ms ease-out;
+  }
+}
+@keyframes policy-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes policy-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* No JS: the footer links are plain #fragment links, so show the targeted text in place. */
+@media (scripting: none) {
+  .policy-dialog:target {
+    display: block;
+    position: static;
+    margin: 24px auto 0;
+    max-height: none;
+  }
+  .policy-dialog:target .policy-dialog__inner {
+    max-height: none;
+  }
+  .policy-dialog__close {
+    display: none;
+  }
+}
+
+.policy-keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px 24px;
+  margin: 0 0 1em;
+}
+.policy-keys div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.policy-keys dt,
+.policy-keys dd {
+  margin: 0;
+}

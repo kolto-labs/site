@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["vite/client", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@site-content": ["../content/site-content.json", "./src/content/placeholder.json"],
+      "@kolto/adaptive-music": ["../packages/adaptive-music/src/index.ts"],
+      "@kolto/adaptive-music/*": ["../packages/adaptive-music/src/*"]
+    }
+  },
+  "include": ["src", "vite.config.ts", "../packages/adaptive-music/src"]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Kolto Labs",
+  "short_name": "Kolto Labs",
+  "description": "Life support for the Odyssey engine. Open-source tools for KotOR I & II.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#03131c",
+  "theme_color": "#03131c",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

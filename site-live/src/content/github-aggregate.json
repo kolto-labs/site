@@ -1,0 +1,364 @@
+{
+  "org": "kolto-labs",
+  "fetchedAt": "2026-10-20T01:26:36.402Z",
+  "repos": [
+    {
+      "name": "kotor-formats",
+      "description": "Readers and writers for the Odyssey engine file formats used by Knights of the Old Republic I and II.",
+      "language": "Rust",
+      "license": "MIT",
+      "stars": 0,
+      "pushedAt": "2026-10-14T12:35:36Z",
+      "url": "https://github.com/kolto-labs/kotor-formats",
+      "fork": false,
+      "defaultBranch": "main",
+      "release": {
+        "tag": "v0.1.0",
+        "prerelease": false,
+        "url": "https://github.com/kolto-labs/kotor-formats/releases/tag/v0.1.0",
+        "publishedAt": "2026-09-08T04:49:39Z",
+        "assets": []
+      },
+      "stats": {
+        "stars": 0,
+        "downloads": 0,
+        "contributors": 3,
+        "weeklyCommits": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          19,
+          2,
+          0,
+          1,
+          0,
+          3,
+          0,
+          0
+        ]
+      },
+      "dependsOn": [],
+      "crates": [
+        {
+          "name": "kotor-ncs-isa",
+          "bin": false
+        },
+        {
+          "name": "kotor-ncs",
+          "bin": false
+        },
+        {
+          "name": "kotor-formats",
+          "bin": false
+        },
+        {
+          "name": "kotor-diff",
+          "bin": false
+        }
+      ],
+      "pkgName": null,
+      "features": [],
+      "files": [
+        "Cargo.toml",
+        "README.md",
+        "crates/kotor-diff/Cargo.toml",
+        "crates/kotor-formats/Cargo.toml",
+        "crates/kotor-ncs-isa/Cargo.toml",
+        "crates/kotor-ncs/Cargo.toml"
+      ]
+    },
+    {
+      "name": "kq",
+      "description": "Query a Knights of the Old Republic installation like it was plain text.",
+      "language": "Rust",
+      "license": "MIT",
+      "stars": 2,
+      "pushedAt": "2026-10-14T12:35:39Z",
+      "url": "https://github.com/kolto-labs/kq",
+      "fork": false,
+      "defaultBranch": "main",
+      "release": {
+        "tag": "v0.3.0",
+        "prerelease": false,
+        "url": "https://github.com/kolto-labs/kq/releases/tag/v0.3.0",
+        "publishedAt": "2026-09-28T14:17:48Z",
+        "assets": [
+          {
+            "name": "install.ps1",
+            "url": "https://github.com/kolto-labs/kq/releases/download/v0.3.0/install.ps1",
+            "downloads": 6
+          },
+          {
+            "name": "install.sh",
+            "url": "https://github.com/kolto-labs/kq/releases/download/v0.3.0/install.sh",
+            "downloads": 3
+          }
+        ]
+      },
+      "stats": {
+        "stars": 2,
+        "downloads": 14,
+        "contributors": 4,
+        "weeklyCommits": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          21,
+          5,
+          0,
+          43,
+          3,
+          2,
+          0,
+          0
+        ]
+      },
+      "dependsOn": [
+        "kotor-formats"
+      ],
+      "crates": [
+        {
+          "name": "kq-format",
+          "bin": false
+        },
+        {
+          "name": "kq-index",
+          "bin": false
+        },
+        {
+          "name": "kq-cli",
+          "bin": true
+        },
+        {
+          "name": "kq-ncs",
+          "bin": false
+        }
+      ],
+      "pkgName": null,
+      "features": [],
+      "files": [
+        "Cargo.toml",
+        "README.md",
+        "crates/kq-cli/Cargo.toml",
+        "crates/kq-format/Cargo.toml",
+        "crates/kq-index/Cargo.toml",
+        "crates/kq-ncs/Cargo.toml"
+      ]
+    },
+    {
+      "name": "OdyPatcher",
+      "description": "TSLPatcher rewrite. Installs KotOR and TSL mods.",
+      "language": "Rust",
+      "license": "AGPL-3.0",
+      "stars": 0,
+      "pushedAt": "2026-10-19T05:38:22Z",
+      "url": "https://github.com/kolto-labs/OdyPatcher",
+      "fork": false,
+      "defaultBranch": "main",
+      "release": {
+        "tag": "v0.2.1",
+        "prerelease": false,
+        "url": "https://github.com/kolto-labs/OdyPatcher/releases/tag/v0.2.1",
+        "publishedAt": "2026-10-19T05:38:22Z",
+        "assets": [
+          {
+            "name": "odypatcher-linux-arm64.tar.gz",
+            "url": "https://github.com/kolto-labs/OdyPatcher/releases/download/v0.2.1/odypatcher-linux-arm64.tar.gz",
+            "downloads": 0
+          },
+          {
+            "name": "odypatcher-linux-x86_64.tar.gz",
+            "url": "https://github.com/kolto-labs/OdyPatcher/releases/download/v0.2.1/odypatcher-linux-x86_64.tar.gz",
+            "downloads": 1
+          },
+          {
+            "name": "odypatcher-macos-arm64.tar.gz",
+            "url": "https://github.com/kolto-labs/OdyPatcher/releases/download/v0.2.1/odypatcher-macos-arm64.tar.gz",
+            "downloads": 0
+          },
+          {
+            "name": "odypatcher-macos-x86_64.tar.gz",
+            "url": "https://github.com/kolto-labs/OdyPatcher/releases/download/v0.2.1/odypatcher-macos-x86_64.tar.gz",
+            "downloads": 0
+          },
+          {
+            "name": "odypatcher-windows-arm64.tar.gz",
+            "url": "https://github.com/kolto-labs/OdyPatcher/releases/download/v0.2.1/odypatcher-windows-arm64.tar.gz",
+            "downloads": 0
+          },
+          {
+            "name": "odypatcher-windows-x86_64.tar.gz",
+            "url": "https://github.com/kolto-labs/OdyPatcher/releases/download/v0.2.1/odypatcher-windows-x86_64.tar.gz",
+            "downloads": 0
+          },
+          {
+            "name": "odypatcher-windows7-x86.tar.gz",
+            "url": "https://github.com/kolto-labs/OdyPatcher/releases/download/v0.2.1/odypatcher-windows7-x86.tar.gz",
+            "downloads": 1
+          },
+          {
+            "name": "SHA256SUMS.txt",
+            "url": "https://github.com/kolto-labs/OdyPatcher/releases/download/v0.2.1/SHA256SUMS.txt",
+            "downloads": 1
+          }
+        ]
+      },
+      "stats": {
+        "stars": 0,
+        "downloads": 5,
+        "contributors": 4,
+        "weeklyCommits": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          23,
+          0,
+          13,
+          0,
+          0,
+          5,
+          8
+        ]
+      },
+      "dependsOn": [
+        "kotor-formats"
+      ],
+      "crates": [
+        {
+          "name": "odypatcher",
+          "bin": true
+        }
+      ],
+      "pkgName": null,
+      "features": [],
+      "files": [
+        "Cargo.toml",
+        "README.md"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+/* ---------- HERO: the Hrakert kolto plant ---------- */
+
+.hero {
+  --scroller-band: 150px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: max(620px, min(calc(100svh - var(--nav-h)), 920px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-bottom: 1px solid var(--rule-hi);
+  background: var(--void);
+}
+
+.hero__fx {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/* Static poster: what you see before the scene boots, and without JS.
+   Light from the surface fading to the Hrakert seabed, with the floor pipe. */
+.hero__poster {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(180deg, transparent calc(100% - 34px), #0c2f3c calc(100% - 34px), #0c2f3c calc(100% - 30px), #06202a calc(100% - 30px), #020c12 100%),
+    linear-gradient(180deg, transparent calc(100% - 44px), #3d6f84 calc(100% - 44px), #174459 calc(100% - 42px), #0b2533 calc(100% - 37px), transparent calc(100% - 36px)),
+    repeating-linear-gradient(104deg, transparent 0 140px, rgba(120, 220, 235, 0.035) 140px 190px, transparent 190px 330px),
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(80, 190, 210, 0.22), transparent 70%),
+    linear-gradient(180deg, #0b3445 0%, #062030 38%, #03131c 72%, #041822 100%);
+}
+.hero.is-live .hero__poster {
+  display: none;
+}
+
+.hero__inner {
+  position: static;
+  text-align: center;
+  padding-top: clamp(40px, 7vh, 72px);
+  padding-bottom: calc(var(--scroller-band) + 16px);
+}
+
+/* soft dark scrim so particulates and bubbles never read as punctuation behind the copy */
+.hero__copy {
+  position: relative;
+  isolation: isolate;
+}
+.hero__copy::before {
+  content: '';
+  position: absolute;
+  inset: -36px -6%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--void) 92%, transparent) 0%, color-mix(in srgb, var(--void) 82%, transparent) 55%, transparent 100%);
+}
+
+.hero__logo {
+  /* square pixels: width / height = grid columns / grid rows */
+  --fit-h: calc(100svh - var(--nav-h) - var(--scroller-band) - 400px);
+  position: relative;
+  width: min(100%, 960px, max(300px, var(--fit-h)) * var(--lw) / var(--lh));
+  aspect-ratio: var(--lw) / var(--lh);
+  margin: 0 auto clamp(22px, 4vh, 40px);
+  pointer-events: none;
+}
+
+.logo-art {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.logo-art--shadow {
+  background: linear-gradient(180deg, #1a8394, #0e4f5e 60%, #0a3a46);
+}
+
+/* palette cycling: a two-cycle gradient strip scrolls through the letters */
+.logo-art--fill::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 200%;
+  background: linear-gradient(
+    180deg,
+    #23a9bb 0%,
+    var(--prime) 8%,
+    #8ff3f8 17%,
+    #e8feff 24%,
+    #ffffff 27%,
+    #8ff3f8 36%,
+    var(--prime) 44%,
+    #23a9bb 50%,
+    var(--prime) 58%,
+    #8ff3f8 67%,
+    #e8feff 74%,
+    #ffffff 77%,
+    #8ff3f8 86%,
+    var(--prime) 94%,
+    #23a9bb 100%
+  );
+  transform: translate3d(0, -50%, 0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .logo-art--fill::before {
+    animation: cyc 3.6s linear infinite;
+  }
+  .hero__logo {
+    animation: raster-in 900ms steps(10, end) 150ms both;
+  }
+  .logo-art--shadow {
+    animation: fade-in 400ms ease-out 900ms both;
+  }
+}
+
+@keyframes cyc {
+  from {
+    transform: translate3d(0, -50%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* the logo paints in row by row from the centre, like a copper list being built */
+@keyframes raster-in {
+  from {
+    clip-path: inset(50% 0 50% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.hero__kicker {
+  font-family: var(--font-pixel);
+  font-size: var(--px-2);
+  line-height: 1.2;
+  color: var(--prime);
+  text-shadow: 0 0 16px color-mix(in srgb, var(--void) 95%, transparent), 0 0 4px color-mix(in srgb, var(--void) 95%, transparent), 0 1px 0 #010a0f;
+  margin: 0 auto 14px;
+  max-width: none;
+  text-wrap: balance;
+}
+
+.hero__title {
+  font-family: var(--font-pixel);
+  font-size: clamp(30px, 3.5vw, var(--px-4));
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ink-hi);
+  max-width: 24em;
+  margin: 0 auto;
+  text-shadow: 0 2px 0 #010a0f, 0 0 24px color-mix(in srgb, var(--void) 90%, transparent);
+}
+
+.hero__sub {
+  margin: 20px auto 30px;
+  max-width: 58ch;
+  font-size: clamp(17px, 1.6vw, 19px);
+  line-height: 1.55;
+  color: var(--ink);
+  text-shadow: 0 0 16px color-mix(in srgb, var(--void) 95%, transparent), 0 0 4px color-mix(in srgb, var(--void) 95%, transparent);
+}
+
+.hero__ctas {
+  justify-content: center;
+}
+
+.hero__sound {
+  position: absolute;
+  right: var(--gutter);
+  top: 16px;
+  z-index: 2;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  min-height: 36px;
+  padding: 6px 12px;
+  font-family: var(--font-pixel);
+  font-size: var(--px-1);
+  color: var(--prime);
+  background: color-mix(in srgb, var(--void) 72%, transparent);
+  border: 1px solid var(--prime-deep);
+  cursor: pointer;
+}
+.hero__sound:hover {
+  background: var(--prime);
+  color: var(--void);
+}
+.hero__sound[aria-pressed='true'] {
+  color: var(--void);
+  background: var(--prime);
+}
+
+.hero__static-greets {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__static-greets {
+    display: block;
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 100px;
+    margin: 0 auto;
+    max-width: 90ch;
+    width: fit-content;
+    padding: 4px 10px;
+    background: color-mix(in srgb, var(--void) 82%, transparent);
+    text-align: center;
+    font-family: var(--font-pixel);
+    font-size: var(--px-1);
+    line-height: 1.6;
+    color: var(--prime);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 1199px) {
+  .hero {
+    --scroller-band: 132px;
+  }
+}
+@media (max-width: 999px) {
+  .hero {
+    --scroller-band: 104px;
+  }
+}
+@media (max-width: 559px) {
+  .hero {
+    --scroller-band: 92px;
+    min-height: 0;
+  }
+  .hero__inner {
+    padding-top: 64px;
+  }
+  .hero__kicker {
+    font-size: 16.5px;
+  }
+  .hero__sound {
+    position: static;
+    margin: 18px auto 0;
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (max-width: 999px) {
+  .hero__static-greets {
+    bottom: 70px;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 559px) {
+  .hero__static-greets {
+    bottom: 64px;
+    -webkit-line-clamp: 2;
+  }
+}

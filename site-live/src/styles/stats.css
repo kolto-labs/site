@@ -1,0 +1,136 @@
+/* Stats graphs at the bottom of /projects. Only existing custom properties. */
+.stats {
+  margin-top: var(--px-4);
+  padding-top: var(--px-2);
+  border-top: 1px solid var(--rule-hi);
+}
+.stats__h {
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--prime);
+  margin: 0 0 var(--px-2);
+}
+.stats__h::before {
+  content: '▌';
+  margin-right: 0.5em;
+  color: var(--prime);
+}
+.stats__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: var(--px-2);
+}
+.stats-chart {
+  margin: 0;
+  padding: var(--px-1) var(--px-2) var(--px-2);
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  min-width: 0;
+}
+.stats-chart__title {
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-hi);
+  margin: 0 0 var(--px-1);
+}
+.stats-chart__cap {
+  margin-top: var(--px-1);
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+/* Horizontal bars, one per project. */
+.stats-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.stats-bar {
+  display: grid;
+  grid-template-columns: minmax(5ch, 14ch) 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-pixel);
+  font-size: 0.8125rem;
+}
+.stats-bar__label {
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stats-bar__svg {
+  display: block;
+  width: 100%;
+  height: 14px;
+}
+.stats-bar__track {
+  fill: var(--panel-2);
+}
+.stats-bar__fill {
+  fill: var(--prime);
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+.stats-bar__value {
+  color: var(--ink-hi);
+  min-width: 4ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Weekly commit columns. */
+.stats-cols {
+  display: block;
+  width: 100%;
+  height: 120px;
+}
+.stats-cols__bar {
+  fill: var(--prime);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+.stats-cols__base {
+  stroke: var(--rule-hi);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.stats-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-family: var(--font-pixel);
+  font-size: 0.6875rem;
+  color: var(--dim);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stats-bar__fill {
+    animation: stats-grow-x 600ms steps(12, end) both;
+  }
+  .stats-cols__bar {
+    animation: stats-grow-y 500ms steps(8, end) both;
+  }
+}
+@keyframes stats-grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes stats-grow-y {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@media (max-width: 480px) {
+  .stats-chart { padding: var(--px-1); }
+  .stats-bar { grid-template-columns: minmax(5ch, 10ch) 1fr auto; gap: 8px; }
+}

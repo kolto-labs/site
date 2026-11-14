@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Static-assets-only Worker: every route is prerendered to dist/<route>/index.html.
+  "name": "koltolabs",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    // Serves dist/404.html (with a 404 status) for unknown paths.
+    "not_found_handling": "404-page",
+    // /about -> /about/ (dist/about/index.html); matches canonical URLs.
+    "html_handling": "auto-trailing-slash"
+  },
+  "observability": { "enabled": true }
+}

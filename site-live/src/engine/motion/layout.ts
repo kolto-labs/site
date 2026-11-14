@@ -1,0 +1,28 @@
+import { BAND, FL, WL } from './kit';
+
+export const L = {
+  W: 320,
+  H: 176,
+  deck: 56,
+  wl: WL,
+  fl: FL,
+  vx: 170,
+  h1: 118,
+  h2: 224,
+  panel: 196,
+  st: [258, 282, 306],
+  hatch: 252,
+  sbx: 112,
+  pk: 104,
+  dc: 188,
+  stack: 132,
+  ov: 157,
+  off: 206,
+  bay: [234, 254, 274, 304],
+  ch: 31,
+  gap: 289,
+  con: 218,
+  band: BAND,
+  sch: [0.1, 0.45],
+  cl: [0.06, 0.3],
+} as const;

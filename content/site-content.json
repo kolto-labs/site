@@ -1,0 +1,574 @@
+{
+  "siteUrl": "https://swkotor.org",
+  "meta": {
+    "/": {
+      "title": "Kolto Labs · Kolto Tank, KotOR in your browser",
+      "description": "Kolto Tank is KotOR I & II in your browser, with mods, a debugger and TAS tools. In development. Bring your own game."
+    },
+    "/about": {
+      "title": "About Kolto Labs · Kolto Tank and KotOR tools",
+      "description": "Kolto Labs is an independent, non-commercial fan project. Our main project is Kolto Tank, KotOR in the browser. We also release kq and Rust format crates."
+    },
+    "/projects": {
+      "title": "Projects · Kolto Tank, kq, kotor-formats",
+      "description": "Every Kolto Labs project and its status. Kolto Tank is in development. kq and the Rust format crates are released."
+    },
+    "/roadmap": {
+      "title": "Roadmap · What Kolto Labs ships next",
+      "description": "What has shipped and what comes next: Kolto Tank, Hyperstim, Adrenal and Hrakert."
+    },
+    "/play": {
+      "title": "Play KOTOR · Kolto Tank",
+      "description": "Kolto Tank is in development and not open yet. Here is what it will do and how your own copy of the game gets in."
+    },
+    "/faq": {
+      "title": "FAQ · Kolto Tank and Kolto Labs",
+      "description": "Is it legal? Can I play KOTOR in the browser yet? Where does the game come from? How do I install kq? Answers about Kolto Tank and Kolto Labs."
+    },
+    "/join": {
+      "title": "Contribute · Join Kolto Labs",
+      "description": "Help build open-source KotOR tooling. We need reverse engineers, Rust developers, NWScript modders, test authors, writers and artists."
+    },
+    "/credits": {
+      "title": "Credits and prior art · Kolto Labs",
+      "description": "The tools, people and communities Kolto Labs builds on: TSLPatcher, KotOR Tool, DeNCS, xoreos, Deadly Stream and more."
+    }
+  },
+  "hero": {
+    "kicker": "KOLTO TANK · KOTOR I & II IN YOUR BROWSER",
+    "headline": "Life support for the Odyssey engine.",
+    "sub": "We're building Kolto Tank: KotOR I and II in your browser, with mods, a debugger and TAS tools. It's in development. Bring your own game, we bring the kolto.",
+    "ctas": [
+      {
+        "label": "Play",
+        "href": "/play"
+      },
+      {
+        "label": "About Kolto Tank",
+        "href": "/projects#kolto-tank"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/kolto-labs"
+      }
+    ]
+  },
+  "homeNfo": "  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n\n  ██  ██   ████   ██      ██████   ████       ██       ████   █████    █████\n  ██ ██   ██  ██  ██        ██    ██  ██      ██      ██  ██  ██  ██  ██\n  ████    ██  ██  ██        ██    ██  ██      ██      ██████  █████    ████\n  ▓▓ ▓▓   ▓▓  ▓▓  ▓▓        ▓▓    ▓▓  ▓▓      ▓▓      ▓▓  ▓▓  ▓▓  ▓▓      ▓▓\n  ▒▒  ▒▒   ▒▒▒▒   ▒▒▒▒▒▒    ▒▒     ▒▒▒▒       ▒▒▒▒▒▒  ▒▒  ▒▒  ▒▒▒▒▒   ▒▒▒▒▒\n\n                                                                   ░▒▓ kL! ▓▒░\n                               p r e s e n t s\n\n             ░▒▓█  L I F E   S U P P O R T   F O R   T H E  █▓▒░\n                         O D Y S S E Y   E N G I N E\n\n═══════════════════════════════[ RELEASE INFO ]═══════════════════════════════\n\n   GROUP ..........: Kolto Labs\n   FOUNDED ........: 2026\n   GAMES ..........: KotOR I & KotOR II: The Sith Lords\n   LICENSES .......: MIT\n   PROTECTION .....: None. It's open source.\n   SUPPLIED BY ....: the community\n   HOME ...........: https://swkotor.org\n   SOURCE .........: https://github.com/kolto-labs\n\n──────────────────────────────────[ NOTES ]───────────────────────────────────\n\n   We build tools for Knights of the Old Republic and The Sith Lords.\n   The main one is Kolto Tank: KotOR in your browser, with mods, a\n   debugger and TAS tools. It's in development. You bring your own\n   copy of the game. Two smaller tools are out already: readers and\n   writers for the formats the games keep their data in, and a query\n   tool for your install.\n\n─────────────────────────────────[ RELEASES ]─────────────────────────────────\n\n   kolto-tank ...... KotOR in your browser                 [ IN DEVELOPMENT  ]\n   kq .............. query an install like plain text      [ RELEASED v0.3.0 ]\n   kotor-formats ... shared K1/K2 format crates            [ RELEASED        ]\n   hyperstim ....... script extender                       [ IN DEVELOPMENT  ]\n   adrenal ......... scripting for mods                    [ IN DEVELOPMENT  ]\n   hrakert ......... long-term, nothing public             [ PLANNED         ]\n   ahto ............ docs hub                              [ PLANNED         ]\n\n───────────────────────────────[ HOW TO PLAY ]────────────────────────────────\n\n   Kolto Tank isn't open yet. This is how it will go.\n\n   1. Open swkotor.org and press Play in your browser.\n\n   2. Bring your own game. Link a copy you own from Steam, GOG or\n      Amazon, or upload your own game files. We don't host the game.\n\n   3. Pick KotOR or The Sith Lords and start playing.\n\n   4. Add mods and extensions from inside the app. Open the debugger\n      when something misbehaves.\n\n   Looking for the command-line tool? That's kq: github.com/kolto-labs/kq\n\n────────────────────────────[ WE ARE LOOKING FOR ]────────────────────────────\n\n   · reverse engineers who read 32-bit x86 comfortably (Ghidra, IDA)\n   · Rust developers who enjoy binary formats and exact round-trips\n   · modders who want to shape the scripting API\n   · modders and testers for Kolto Tank\n   · technical writers for Ahto\n   · ASCII/ANSI artists and chiptune musicians\n   · players on every build: disc, Steam, GOG and the rest\n\n   Open an issue or a pull request.\n\n─────────────────────────────────[ CREDITS ]──────────────────────────────────\n\n   Respect to the ones who mapped this engine first:\n\n   stoffe for TSLPatcher · Fred Tetra for KotOR Tool · the authors of\n   DeNCS, nwnnsscomp and MDLOps · the kotorblender lineage · xoreos\n\n   Thanks to Deadly Stream · the LucasForums archivists · the KOTOR\n   Community Portal · r/kotor · Nexus Mods · NWNX · the decomp community\n\n──────────────────────────────────[ LEGAL ]───────────────────────────────────\n\n   Independent, non-commercial. Not affiliated with, endorsed by or\n   sponsored by Lucasfilm, Disney, BioWare, Electronic Arts, Obsidian,\n   Aspyr or Saber Interactive. No game assets and no game code in our\n   repositories. Bring your own legal copy. We do not condone piracy.\n\n  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀\n   bring your own game · we bring the kolto  swkotor.org\n",
+  "disclaimer": "Kolto Labs is an independent, **non-commercial** fan project. It is **not affiliated with, endorsed by, or sponsored by** Lucasfilm, Disney, BioWare, Electronic Arts, Obsidian, Aspyr or Saber Interactive. Star Wars, Knights of the Old Republic and related marks belong to their owners. Our repositories contain **no game assets or copyrighted game code**. You need a **legally obtained copy** of the games. We do not condone piracy.",
+  "about": {
+    "sections": [
+      {
+        "id": "about",
+        "heading": "What Kolto Labs is",
+        "body": "Kolto Labs is an independent, non-commercial fan project. We build tools for *Star Wars: Knights of the Old Republic* and *Knights of the Old Republic II: The Sith Lords*.\n\nOur main project is **Kolto Tank**: KotOR in your browser, with a library of mods and extensions, a full debugger and TAS tools. It's in development and not open to the public yet. You bring your own copy of the game.\n\nWe also release smaller tools. **kq** lets you query a game install from the command line, and `kotor-formats` is a set of shared Rust libraries for the games' file formats. Both are released.\n\nThe name comes from kolto, the healing medium harvested in the oceans of Manaan. The games are more than twenty years old, and people still mod them."
+      },
+      {
+        "id": "mission",
+        "heading": "Mission",
+        "body": "Keep the games moddable for the next twenty years.\n\nKolto Tank is meant to give modders one place to publish and players one place to run mods. The plan is for mods to run in the browser, so a modder's files stay under their control and players get updates without reinstalling. We also want the games on phones, tablets and TVs. None of that works yet.\n\nThe tools under it follow one rule: load a file, save it unchanged, get the same bytes back. Parsers are strict by default and lenient only when you ask."
+      },
+      {
+        "id": "how-we-work",
+        "heading": "How we work",
+        "body": "- Each released project has one repository, under [github.com/kolto-labs](https://github.com/kolto-labs).\n- Bugs and feature requests go in public issues.\n- Our released projects are MIT-licensed."
+      },
+      {
+        "id": "why-reverse-engineering",
+        "heading": "Standing on prior work",
+        "body": "The games never shipped with public documentation or an official modding toolset. Modders mapped the engine themselves, and that work produced TSLPatcher, KotOR Tool, DeNCS and two decades of mods. We build on it and credit it.\n\nWe work with games we own. We never commit game assets or original executables. Kolto Tank doesn't include the game either: you link your own copy from Steam, GOG or Amazon, or upload your own files."
+      },
+      {
+        "id": "not-affiliated",
+        "heading": "Not affiliated",
+        "body": "We're not affiliated with Lucasfilm, BioWare, Obsidian or the games' publishers. Is it legal? Yes. We build interoperable tools for games people already own, and we ship none of the games' content."
+      }
+    ]
+  },
+  "projects": [
+    {
+      "slug": "kolto-tank",
+      "name": "Kolto Tank",
+      "repo": null,
+      "tagline": "KotOR in your browser, with mods, a debugger and TAS tools.",
+      "description": "We're building Kolto Tank to run KotOR I and II in a web browser, with a library of mods and extensions, a full debugger and TAS tools. It's in development and not open to the public yet.\n\nYou bring your own game. You'll link a copy from Steam, GOG or Amazon, or upload your own files. Kolto Tank doesn't include the game.",
+      "status": "in-development",
+      "lang": "TBD",
+      "license": "TBD",
+      "version": null,
+      "features": [
+        "Add mods and extensions from inside the app; updates arrive without a reinstall",
+        "A full debugger",
+        "TAS tools",
+        "Link your game from Steam, GOG or Amazon, or upload your own files",
+        "Phones, tablets and TVs are planned. None of them work yet"
+      ],
+      "install": {
+        "cargo": null,
+        "shell": null,
+        "powershell": null
+      }
+    },
+    {
+      "slug": "kq",
+      "name": "kq",
+      "repo": "https://github.com/kolto-labs/kq",
+      "tagline": "Query a KotOR installation like it was plain text.",
+      "description": "kq is a command-line tool, separate from Kolto Tank. kq treats a KotOR or TSL game folder as structured, searchable data. It reads the archives in place, so nothing gets extracted first. Questions work the way rg works on a source tree and jq works on JSON. Start with kq which: every copy of a resource in engine resolve order, with a star on the copy the game actually loads.",
+      "status": "released",
+      "lang": "Rust",
+      "license": "MIT",
+      "version": "0.3.0",
+      "features": [
+        "which: every copy of a resource in engine resolve order (Override, modules, BIFs), with the loaded copy starred",
+        "cat: GFF, 2DA, TLK, SSF, NCS (decompiled to NSS), MDL, walkmeshes and more as an outline, gron lines, JSON or raw bytes",
+        "grep: regex search over decoded contents; hits are field paths, not byte offsets",
+        "delta, patch and merge: structural diffs and three-way merges of decoded resources",
+        "graph: an inventory of used, unused and overshadowed resources in an install",
+        "JSON and JSONL output plus stable exit codes, so scripts can branch on results",
+        "Works on a full install, a single module, or a folder of loose files"
+      ],
+      "install": {
+        "cargo": "cargo install --git https://github.com/kolto-labs/kq --locked",
+        "shell": "curl -LsSf https://github.com/kolto-labs/kq/releases/download/v0.3.0/install.sh | KQ_REPO=kolto-labs/kq sh",
+        "powershell": "powershell -ExecutionPolicy ByPass -c \"Set-Item Env:KQ_REPO kolto-labs/kq; irm https://github.com/kolto-labs/kq/releases/download/v0.3.0/install.ps1 | iex\""
+      }
+    },
+    {
+      "slug": "kotor-formats",
+      "name": "kotor-formats",
+      "repo": "https://github.com/kolto-labs/kotor-formats",
+      "tagline": "One copy of the byte layouts, so a patcher, a compiler and a query tool cannot drift apart.",
+      "description": "Three tools were each carrying their own copy of the KotOR I and II byte layouts, free to drift apart. These Rust crates are the one copy they all read from. Small on purpose, so each tool takes only what it needs: kotor-ncs-isa (the NCS instruction set as data), kotor-ncs (NCS read/write plus a decompiler built on the DeNCS algorithm), kotor-formats (GFF, 2DA, TLK, SSF, ERF/RIM) and kotor-diff (structural comparison).",
+      "status": "released",
+      "lang": "Rust",
+      "license": "MIT",
+      "version": null,
+      "features": [
+        "Byte-exact round trips: type tags, field widths, raw labels and padding are preserved, not normalised",
+        "Lossless text: a total Latin-1 mapping, so encode(decode(x)) == x for all 256 byte values",
+        "Strict by default, accepting what TSLPatcher accepted; opt-in leniency for read-only tools",
+        "Errors in the (GFF-1) / (2DA-8) form mod authors already know from install logs",
+        "Early: the API is not stable yet, so depend on a git tag"
+      ],
+      "install": {
+        "cargo": "cargo add kotor-formats --git https://github.com/kolto-labs/kotor-formats",
+        "shell": null,
+        "powershell": null
+      }
+    },
+    {
+      "slug": "hyperstim",
+      "name": "Hyperstim",
+      "repo": null,
+      "tagline": "A script extender for KotOR and TSL.",
+      "description": "",
+      "status": "in-development",
+      "lang": "TBD",
+      "license": "TBD",
+      "version": null,
+      "features": [],
+      "install": {
+        "cargo": null,
+        "shell": null,
+        "powershell": null
+      }
+    },
+    {
+      "slug": "adrenal",
+      "name": "Adrenal",
+      "repo": null,
+      "tagline": "Scripting for KotOR and TSL mods.",
+      "description": "",
+      "status": "in-development",
+      "lang": "TBD",
+      "license": "TBD",
+      "version": null,
+      "features": [],
+      "install": {
+        "cargo": null,
+        "shell": null,
+        "powershell": null
+      }
+    },
+    {
+      "slug": "hrakert",
+      "name": "Hrakert",
+      "repo": null,
+      "tagline": "A long-term project.",
+      "description": "",
+      "status": "planned",
+      "lang": "TBD",
+      "license": "TBD",
+      "version": null,
+      "features": [],
+      "install": {
+        "cargo": null,
+        "shell": null,
+        "powershell": null
+      }
+    },
+    {
+      "slug": "ahto",
+      "name": "Ahto",
+      "repo": null,
+      "tagline": "The Kolto Labs docs hub.",
+      "description": "This website is its first room.",
+      "status": "planned",
+      "lang": "TBD",
+      "license": "TBD",
+      "version": null,
+      "features": [],
+      "install": {
+        "cargo": null,
+        "shell": null,
+        "powershell": null
+      }
+    }
+  ],
+  "roadmap": [
+    {
+      "phase": "00",
+      "title": "TRIAGE // foundations",
+      "status": "done",
+      "progress": 100,
+      "items": [
+        {
+          "text": "kq and the format crates released",
+          "done": true
+        },
+        {
+          "text": "Org, repositories and this site",
+          "done": true
+        }
+      ]
+    },
+    {
+      "phase": "01",
+      "title": "TANK // Kolto Tank",
+      "status": "active",
+      "progress": null,
+      "items": [
+        {
+          "text": "KotOR I and II in the browser, with your own copy of the game",
+          "done": false
+        },
+        {
+          "text": "Link a copy from Steam, GOG or Amazon, or upload your own files",
+          "done": false
+        },
+        {
+          "text": "Mod and extension library with easy updates",
+          "done": false
+        },
+        {
+          "text": "Debugger and TAS tools",
+          "done": false
+        },
+        {
+          "text": "Phones, tablets and TVs",
+          "done": false
+        }
+      ]
+    },
+    {
+      "phase": "02",
+      "title": "STIM // Hyperstim and Adrenal",
+      "status": "active",
+      "progress": null,
+      "items": [
+        {
+          "text": "Hyperstim: work under way for both games",
+          "done": false
+        },
+        {
+          "text": "Hyperstim: script bindings for modders",
+          "done": false
+        },
+        {
+          "text": "Adrenal: scripting for mods",
+          "done": false
+        }
+      ]
+    },
+    {
+      "phase": "03",
+      "title": "ARCHIVE // Ahto",
+      "status": "next",
+      "progress": null,
+      "items": [
+        {
+          "text": "Format specs and reference docs",
+          "done": false
+        },
+        {
+          "text": "Guides for modders",
+          "done": false
+        }
+      ]
+    },
+    {
+      "phase": "04",
+      "title": "RIFT // Hrakert",
+      "status": "later",
+      "progress": null,
+      "items": [
+        {
+          "text": "Long-term work, nothing public yet",
+          "done": false
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "What is Kolto Labs?",
+      "a": "An independent group building tools for KotOR I and II. Our main project is Kolto Tank: KotOR in your browser, with mods, a debugger and TAS tools. It's in development. Released so far are the kq query tool and the kotor-formats libraries, on GitHub under github.com/kolto-labs."
+    },
+    {
+      "q": "What is Kolto Tank?",
+      "a": "Our main project. It's KotOR I and II in your browser, with a library of mods and extensions, a full debugger and TAS tools. It's in development and not open to the public yet. The goal is one place for modders to publish and for players to run mods, with updates that don't need a reinstall."
+    },
+    {
+      "q": "Is this legal?",
+      "a": "Yes. We build interoperable tools for games people already own. Our repositories contain no game assets and no copyrighted game code, and our tools need your own legally obtained copy of the games to do anything."
+    },
+    {
+      "q": "Are you affiliated with Lucasfilm, Disney, BioWare, Obsidian, Aspyr or Saber?",
+      "a": "No. Kolto Labs is an independent, non-commercial community project, and none of those companies endorse or sponsor it. We have no information about any official Star Wars game, including the announced remake. Our work targets the original games."
+    },
+    {
+      "q": "Where do I get the games?",
+      "a": "Buy them. Both games are sold on current PC storefronts, and your old discs work too. We don't help with, link to or answer questions about pirated copies."
+    },
+    {
+      "q": "Can I play KOTOR in the browser today?",
+      "a": "Not yet. Kolto Tank is in development. The \"Play in your browser\" button goes to a page that explains what to expect, and it will open the game once there is something to open."
+    },
+    {
+      "q": "Where does the game come from?",
+      "a": "From you. Kolto Tank doesn't include the game. You'll link a copy you own from Steam, GOG or Amazon, which is the way we recommend, or upload your own game files. Both are planned and neither is open yet."
+    },
+    {
+      "q": "Will it run on my phone, tablet or TV?",
+      "a": "That's planned. Kolto Tank is built for the browser, and we want it on phones, tablets and TVs. None of those work yet."
+    },
+    {
+      "q": "Which versions of the games do your tools support?",
+      "a": "Depends on the tool. kq and the format libraries read the games' data files, so they work with any install that has the standard layout. Kolto Tank and Hyperstim aren't out yet."
+    },
+    {
+      "q": "When is Hyperstim coming out?",
+      "a": "When it's done. It's in development and built by volunteers. Watch the roadmap."
+    },
+    {
+      "q": "Is Hyperstim a new engine, a remake or an emulator?",
+      "a": "No. It's built for the original games."
+    },
+    {
+      "q": "How do I install kq?",
+      "a": "kq is a command-line tool, separate from Kolto Tank. Run the installer for your system.\n\n```sh\n# macOS / Linux\ncurl -LsSf https://github.com/kolto-labs/kq/releases/download/v0.3.0/install.sh | KQ_REPO=kolto-labs/kq sh\n```\n\n```powershell\n# Windows\npowershell -ExecutionPolicy ByPass -c \"Set-Item Env:KQ_REPO kolto-labs/kq; irm https://github.com/kolto-labs/kq/releases/download/v0.3.0/install.ps1 | iex\"\n```\n\nOr build it with Cargo:\n\n```sh\ncargo install --git https://github.com/kolto-labs/kq --locked\n```\n\nPlain `cargo install kq` won't work, because the kq name on crates.io belongs to an unrelated tool."
+    },
+    {
+      "q": "Does kq replace KotOR Tool, TSLPatcher or the other editors and patchers?",
+      "a": "No. kq is a command-line query tool: it lists, resolves, prints, searches and diffs. It doesn't edit archives, compile scripts or install mods. Use it for investigating and analyzing the game's files and content."
+    },
+    {
+      "q": "Can I use your libraries in my own tool or mod?",
+      "a": "Yes. kq and kotor-formats are MIT, so you can use them almost anywhere; keep the license notice."
+    },
+    {
+      "q": "Do you use decompiled game code?",
+      "a": "Not in the libraries or tools. Details are in our reverse-engineering policy."
+    },
+    {
+      "q": "Why Rust?",
+      "a": "Parsing files from strangers' mods is exactly where memory safety pays off, and Rust gives us single static binaries, good cross-platform tooling and fast tests."
+    },
+    {
+      "q": "Will Hyperstim or Adrenal trip my antivirus?",
+      "a": "Possibly. Antivirus scanners are wary of game add-ons."
+    },
+    {
+      "q": "Is there a Discord or forum?",
+      "a": "Basically nowhere. This is a fan project that adheres to the aesthetic of my own personal nostalgia from the 2000s era."
+    },
+    {
+      "q": "Do you take donations?",
+      "a": "We aren't set up to. The most useful thing you can give us is a bug report with steps to reproduce it."
+    },
+    {
+      "q": "How can I help?",
+      "a": "Spread the word and link us. Our home is [github.com/kolto-labs](https://github.com/kolto-labs)."
+    },
+    {
+      "q": "Why is it called Kolto Labs?",
+      "a": "Kolto is the healing medium in KotOR, the stuff harvested on Manaan. That's basically what these projects do to an old engine: patch it, heal it, extend it. So I named it after kolto, and the rest followed the theme: Hyperstim, Adrenal, Kolto Tank, and release channels named after medpacs."
+    }
+  ],
+  "play": {
+    "lede": "Kolto Tank is in development and isn't open yet, so there is nothing to launch from this page.",
+    "sections": [
+      {
+        "id": "what",
+        "heading": "What it will be",
+        "body": "KotOR I and II in your browser, with a library of mods and extensions you add from inside the app, a full debugger and TAS tools. Updates to mods arrive without a reinstall."
+      },
+      {
+        "id": "your-game",
+        "heading": "Your game",
+        "body": "Kolto Tank doesn't include the game, and we don't host game files. You'll link a copy you own from Steam, GOG or Amazon, which is the way we recommend, or upload your own game files."
+      },
+      {
+        "id": "devices",
+        "heading": "Where it will run",
+        "body": "It is built for the browser. Phones, tablets and TVs are planned, and none of them work yet."
+      },
+      {
+        "id": "today",
+        "heading": "What you can use today",
+        "body": "The kq query tool and the kotor-formats libraries are released. See [Projects](/projects/#kq). Progress on Kolto Tank is on the [roadmap](/roadmap/)."
+      }
+    ]
+  },
+  "join": {
+    "intro": "Kolto Labs is built by volunteers. Open an issue, send a pull request, or pick up something labelled good first issue.",
+    "lookingFor": [
+      {
+        "role": "Reverse engineers",
+        "detail": "Comfortable in 32-bit x86 and MSVC-era C++, with Ghidra, IDA or a debugger."
+      },
+      {
+        "role": "Rust developers",
+        "detail": "You like binary formats, property tests and byte-exact round trips. kq and kotor-formats both have open issues."
+      },
+      {
+        "role": "NWScript modders",
+        "detail": "You know what the vanilla command set can't do. Help shape Hyperstim so it makes sense to the people who'll use it."
+      },
+      {
+        "role": "Scripting developers",
+        "detail": "Help shape Adrenal's API and its error messages."
+      },
+      {
+        "role": "Test authors",
+        "detail": "Write tests that pin down engine behaviour and catch regressions in tools and mods."
+      },
+      {
+        "role": "Technical writers",
+        "detail": "Write specifications and guides for Ahto."
+      },
+      {
+        "role": "Artists and musicians",
+        "detail": "ASCII/ANSI art, pixel fonts, chiptune. Original work only, under an open license."
+      },
+      {
+        "role": "Players on every build",
+        "detail": "Tell us what differs between the disc, Steam, GOG and other builds."
+      }
+    ],
+    "steps": [
+      "Read [CONTRIBUTING.md](https://github.com/kolto-labs/.github/blob/main/CONTRIBUTING.md) and the [reverse-engineering policy](/join/#re-policy). They're short.",
+      "Find something to do: a good first issue, a bug you've hit, or a gap in the docs.",
+      "Comment on the issue so nobody duplicates your work.",
+      "Fork, branch, keep the change focused. Add or update tests.",
+      "Open a pull request. CI runs, and review happens in public."
+    ],
+    "rePolicy": "**Short version.** We reverse-engineer games we own, for interoperability, preservation and modding, and we keep our repositories clean.\n\n- **Never commit** game assets, original executables, extracted game files, or anything from leaked or confidential material. Test fixtures are synthetic or generated.\n- **Write your own code.** Don't paste disassembler or decompiler output into our repositories.\n- **Conflicts of interest.** If you've had access to confidential source or documentation for these games, or work under an NDA that covers them, tell us before contributing to affected areas.",
+    "conduct": "We follow the [Contributor Covenant 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).\n\n- Be kind. Critique code and ideas, not people.\n- Assume good faith, and ask before you assume.\n- Newcomers are welcome. There are no stupid questions about a twenty-year-old undocumented engine.\n- No harassment, personal attacks or discrimination, in our spaces or aimed at people in them.\n- Don't publish anyone's private information.\n\nReports go to the maintainers privately and are handled in confidence. Enforcement follows the Covenant's guidelines, from a private warning up to a permanent ban."
+  },
+  "greets": {
+    "communities": [
+      {
+        "name": "Deadly Stream",
+        "url": "https://deadlystream.com",
+        "why": "Where KotOR modding lives: files, forums, works in progress, and a culture that takes credit and permissions seriously."
+      },
+      {
+        "name": "LucasForums Archive Project",
+        "url": "https://lucasforumsarchive.com/forum/324",
+        "why": "For keeping the modding boards where most of the original KotOR tools and knowledge were built."
+      },
+      {
+        "name": "KOTOR Community Portal",
+        "url": "https://kotor.neocities.org/modding/",
+        "why": "Curated mod builds. A lot of players learned how to mod these games properly from them."
+      },
+      {
+        "name": "r/kotor",
+        "url": "https://www.reddit.com/r/kotor/",
+        "why": "Twenty years on and still arguing about Revan. Long may it continue."
+      },
+      {
+        "name": "Nexus Mods",
+        "url": "https://www.nexusmods.com/games/kotor",
+        "why": "A second home for KotOR and TSL mods, and for the people who make them."
+      },
+      {
+        "name": "NWNX",
+        "url": "https://github.com/nwnxee/unified",
+        "why": "The Neverwinter Nights extender community showed how far a script extender on a BioWare engine can go."
+      },
+      {
+        "name": "The decompilation community",
+        "url": "https://decomp.dev",
+        "why": "decomp.dev, decomp.me, Decompedia and the teams behind them showed that matching decompilation of a whole game is achievable, and that progress can be public."
+      }
+    ],
+    "priorArt": [
+      {
+        "name": "TSLPatcher",
+        "by": "stoffe",
+        "url": "https://deadlystream.com/files/file/1039-tsl-patcher-tlked-and-accessories/",
+        "why": "The installer most KotOR mods ship with. kotor-formats is strict by default and accepts what TSLPatcher accepts."
+      },
+      {
+        "name": "nwnnsscomp",
+        "by": "Torlack (Edward T. Smith)",
+        "url": "https://deadlystream.com/files/category/17-modding-tools/",
+        "why": "Torlack's NWScript compiler from Neverwinter Nights. Modified builds of it still compile KotOR scripts, and TSLPatcher ships with one."
+      },
+      {
+        "name": "KotOR Tool",
+        "by": "Fred Tetra",
+        "url": "https://deadlystream.com/files/file/280-kotor-tool/",
+        "why": "An editor for 2DA tables, scripts, templates and modules. Fred Tetra started it to experiment with 2DA files and scripts."
+      },
+      {
+        "name": "DeNCS",
+        "by": "JdNoa and Dashus",
+        "url": "https://deadlystream.com/topic/12046-dencs-convert-ncs-back-to-source/",
+        "why": "Turns compiled NCS scripts back into NSS source. JdNoa wrote the decompiler and Dashus the interface. The decompiler in kotor-ncs builds on its algorithm."
+      },
+      {
+        "name": "MDLOps and kotorblender",
+        "by": "Chuck Chargin Jr., ndix UR and seedhartha",
+        "url": "https://github.com/seedhartha/kotorblender",
+        "why": "[MDLOps](https://deadlystream.com/files/file/779-mdlops/) converts KotOR's binary models to text and back. Chuck Chargin Jr. wrote it and ndix UR took it to 1.0. kotorblender imports and exports the same models in Blender. It is a fork of Purifier and ndix UR's KotORBlender, which grew out of Symmetric's NeverBlender."
+      },
+      {
+        "name": "xoreos",
+        "by": null,
+        "url": "https://xoreos.org",
+        "why": "An open-source reimplementation of BioWare's Aurora engine and its descendants. KotOR is one of the games it targets."
+      },
+      {
+        "name": "K1SE and K2SE",
+        "by": "TheMMN (K1SE) and Renan Macena (K2SE)",
+        "url": "https://github.com/renanaugustomacena-ux/K2SE",
+        "why": "Script extenders that add new NWScript functions to the Steam builds of KotOR and TSL. [K1SE](https://deadlystream.com/topic/12324-resourcekotor-script-extender-k1sekse-100zip/) is on Deadly Stream and K2SE is on GitHub."
+      }
+    ],
+    "scroller": "KOLTO LABS PRESENTS ... LIFE SUPPORT FOR THE ODYSSEY ENGINE ... RESPECT TO STOFFE FOR TSLPATCHER, FRED TETRA FOR KOTOR TOOL AND EVERYONE WHO MAPPED THIS ENGINE BEFORE US ... THANKS TO DEADLY STREAM ... THE LUCASFORUMS ARCHIVISTS ... THE KOTOR COMMUNITY PORTAL ... XOREOS ... THE KOTORBLENDER LINEAGE ... NWNX ... THE DECOMP COMMUNITY ... R/KOTOR ... AND EVERY MODDER STILL SHIPPING FIXES FOR A TWENTY-YEAR-OLD GAME ... PROTECTION: NONE. IT'S OPEN SOURCE ... BRING YOUR OWN GAME, WE BRING THE KOLTO ... WRAPPING AROUND ..."
+  },
+  "press": {
+    "boilerplateShort": "Kolto Labs is an independent, open-source group that builds tools for Star Wars: Knights of the Old Republic I and II. Its main project, Kolto Tank, is KotOR in the browser with mods, a debugger and TAS tools, and is in development. kq queries a game install from the command line, and kotor-formats is a set of shared Rust libraries for the games' file formats. Both are released.",
+    "boilerplateLong": "Kolto Labs is an independent, non-commercial open-source group that builds tools for Star Wars: Knights of the Old Republic and Knights of the Old Republic II: The Sith Lords. Its main project, Kolto Tank, is in development: the games in a web browser, with a library of mods and extensions, a full debugger and TAS tools. Players bring their own copy of the game. Released: kq, a command-line tool that lets modders query a game installation, and kotor-formats, shared Rust readers and writers for the games' file formats. Released code is published at github.com/kolto-labs under open-source licenses. Kolto Labs is not affiliated with Lucasfilm, Disney, BioWare, Electronic Arts, Obsidian Entertainment, Aspyr Media or Saber Interactive, and its repositories contain no game assets."
+  },
+  "releaseChannels": [
+    {
+      "name": "Medpac",
+      "channel": "stable",
+      "desc": "Tagged releases on GitHub."
+    }
+  ]
+}

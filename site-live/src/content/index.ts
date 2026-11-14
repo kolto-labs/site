@@ -1,0 +1,41 @@
+/**
+ * Site content entry point.
+ *
+ * `@site-content` is an alias (see vite.config.ts + tsconfig paths) that resolves to
+ * ../../../content/site-content.json (the copywriter's file, relative to this module)
+ * whenever it exists, and to ./placeholder.json otherwise. Swap content by editing
+ * that JSON file; no code changes needed.
+ */
+import raw from '@site-content';
+import type { SiteContent, Project } from './types';
+import { PAGES } from '../flags';
+
+export type * from './types';
+
+const full = raw as unknown as SiteContent;
+
+/** With PAGES.join off: no /join meta, links into /join point at the home page, and the FAQ points at GitHub. */
+function withoutJoin(c: SiteContent): SiteContent {
+  const swap = (s: string) => s.replace(/\(\/join\/?#/g, '(/#').replace('See the Join page.', 'Start at [github.com/kolto-labs](https://github.com/kolto-labs).');
+  const { '/join': _off, ...meta } = c.meta as Record<string, unknown>;
+  return {
+    ...c,
+    meta: meta as SiteContent['meta'],
+    about: { ...c.about, sections: c.about.sections.map((s) => ({ ...s, body: swap(s.body) })) },
+    faq: c.faq.map((f) => ({ ...f, a: swap(f.a) })),
+  };
+}
+
+export const content = PAGES.join ? full : withoutJoin(full);
+
+/** Canonical origin. Single place to change after deploy (content.siteUrl wins). */
+export const SITE_URL = (content.siteUrl || 'https://swkotor.org').replace(/\/+$/, '');
+
+export const LINKS = {
+  github: 'https://github.com/kolto-labs',
+  // TODO: contact email not yet decided.
+  email: null as string | null,
+};
+
+export const projectBySlug = (slug: string): Project | undefined =>
+  content.projects.find((p) => p.slug === slug);

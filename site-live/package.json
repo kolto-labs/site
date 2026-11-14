@@ -1,0 +1,38 @@
+{
+  "name": "koltolabs-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Kolto Labs website: Vite + React + TypeScript, prerendered, served as Cloudflare Workers static assets.",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
+    "build": "npm run fetch:repos && npm run typecheck && vite build && vite build --ssr src/entry-server.tsx --outDir .ssr && node scripts/prerender.mjs && node scripts/og.mjs",
+    "build:fast": "npm run fetch:repos && vite build && vite build --ssr src/entry-server.tsx --outDir .ssr && node scripts/prerender.mjs",
+    "preview": "vite preview --port 4173",
+    "shots": "node scripts/shots.mjs",
+    "deploy": "wrangler deploy",
+    "fetch:repos": "node scripts/fetch-repos.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "marked": "^18.0.14",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router": "^7.18.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "playwright-core": "^1.56.0",
+    "typescript": "5.9",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7",
+    "wrangler": "^4.143.0"
+  }
+}

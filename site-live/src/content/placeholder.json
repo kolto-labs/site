@@ -1,0 +1,236 @@
+{
+  "siteUrl": "https://swkotor.org",
+  "meta": {
+    "/": {
+      "title": "Kolto Labs — Life support for the Odyssey engine",
+      "description": "Open-source tools, file formats, a script extender and a test harness for Star Wars: Knights of the Old Republic I & II modding and reverse engineering."
+    },
+    "/about": {
+      "title": "About — Kolto Labs",
+      "description": "Kolto Labs is an independent, non-commercial fan project. We build open-source tools for KotOR I and II."
+    },
+    "/projects": {
+      "title": "Projects — Kolto Labs",
+      "description": "kq, kotor-formats, and the in-development Hyperstim, Adrenal and Kolto Tank."
+    },
+    "/roadmap": {
+      "title": "Roadmap — Kolto Labs",
+      "description": "What is done, what is in progress and what comes next for the Kolto Labs KotOR modding toolchain."
+    },
+    "/faq": {
+      "title": "FAQ — Kolto Labs",
+      "description": "Is this legal? Do I need the games? What is Hyperstim? Answers about Kolto Labs and KotOR modding tools."
+    },
+    "/join": {
+      "title": "Join — Kolto Labs",
+      "description": "We are looking for Rust coders, reverse engineers, testers and writers. Here is how to start."
+    },
+    "/credits": {
+      "title": "Credits — Kolto Labs",
+      "description": "The communities and prior art that made KotOR modding possible."
+    }
+  },
+  "hero": {
+    "kicker": "Open-source kolto for KotOR I & II",
+    "headline": "Life support for the Odyssey engine.",
+    "sub": "We build the tools that read, patch, test and extend Knights of the Old Republic.",
+    "ctas": [
+      { "label": "Browse the releases", "href": "/projects" },
+      { "label": "Read the roadmap", "href": "/roadmap" }
+    ]
+  },
+  "homeNfo": "                K O L T O   L A B S   P R E S E N T S\n\n        Life support for the Odyssey engine  ·  KotOR I & II\n\n  ─────────────────────────[ RELEASE NOTES ]─────────────────────────\n\n  Two games from 2003 and 2004 still have a living modding scene.\n\n  ─────────────────────────────[ STATUS ]────────────────────────────\n\n  kq ............... released   query an install like plain text\n  kotor-formats .... released   one copy of the byte layouts\n  hyperstim ........ in dev     the script extender\n  adrenal .......... in dev     scripting for mods\n  kolto tank ....... in dev     testing for mods\n\n  ───────────────────────────[ PROTECTION ]──────────────────────────\n\n  None. It's open source.\n",
+  "disclaimer": "Kolto Labs is an independent, **non-commercial** fan project. It is **not affiliated with, endorsed by, or sponsored by** Lucasfilm, Disney, BioWare, Electronic Arts, Obsidian, Aspyr or Saber Interactive. Star Wars, Knights of the Old Republic and related marks belong to their owners. Our repositories contain **no game assets or copyrighted game code**. You need a **legally obtained copy** of the games. We do not condone piracy.",
+  "about": {
+    "sections": [
+      {
+        "id": "what",
+        "heading": "What Kolto Labs is",
+        "body": "Kolto is the healing medium of the Old Republic. Kolto Labs builds open-source tools for the Odyssey-engine games."
+      },
+      {
+        "id": "why",
+        "heading": "Why we exist",
+        "body": "Our released projects are MIT-licensed. Each has one repository, and bugs and feature requests go in its public issues."
+      },
+      {
+        "id": "re",
+        "heading": "Why reverse engineering",
+        "body": "The original engine is the specification. When a tool disagrees with the game, the tool is wrong. We document engine behaviour from the shipped executables so that patchers, compilers and query tools agree with the game."
+      }
+    ]
+  },
+  "projects": [
+    {
+      "slug": "kq",
+      "name": "kq",
+      "repo": "https://github.com/kolto-labs/kq",
+      "tagline": "Query a KotOR installation like it was plain text.",
+      "description": "A `jq`/`rg`-style command-line tool for KotOR I & II. It lists resources, resolves which copy the game actually loads across override, modules and BIFs, and prints GFF, 2DA, TLK, NCS, models and textures as outline, gron, JSON or raw bytes.",
+      "status": "released",
+      "lang": "Rust",
+      "license": "MIT",
+      "version": "0.3.0",
+      "features": [
+        "Resolves override / module / BIF precedence exactly like the game",
+        "Regex search over decoded content",
+        "diff and merge for GFF and 2DA",
+        "Used, unused and overshadowed resource inventory"
+      ],
+      "install": {
+        "cargo": "cargo install --git https://github.com/kolto-labs/kq --locked",
+        "shell": "curl -LsSf https://github.com/kolto-labs/kq/releases/download/v0.3.0/install.sh | KQ_REPO=kolto-labs/kq sh",
+        "powershell": "powershell -ExecutionPolicy ByPass -c \"Set-Item Env:KQ_REPO kolto-labs/kq; irm https://github.com/kolto-labs/kq/releases/download/v0.3.0/install.ps1 | iex\""
+      }
+    },
+    {
+      "slug": "kotor-formats",
+      "name": "kotor-formats",
+      "repo": "https://github.com/kolto-labs/kotor-formats",
+      "tagline": "One copy of the byte layouts.",
+      "description": "Shared readers and writers for KotOR I/II formats: `kotor-ncs-isa`, `kotor-ncs` (with a decompiler), `kotor-formats` (GFF, 2DA, TLK, SSF, ERF/RIM) and `kotor-diff`. One copy of the byte layouts, so a patcher, a compiler and a query tool cannot drift apart.",
+      "status": "released",
+      "lang": "Rust",
+      "license": "MIT",
+      "version": null,
+      "features": [
+        "Exact round-trips",
+        "Lossless Latin-1",
+        "Strict by default, opt-in leniency",
+        "NCS decompiler"
+      ],
+      "install": {
+        "cargo": "cargo add kotor-formats --git https://github.com/kolto-labs/kotor-formats",
+        "shell": null,
+        "powershell": null
+      }
+    },
+    {
+      "slug": "hyperstim",
+      "name": "Hyperstim",
+      "repo": null,
+      "tagline": "A script extender for KotOR and TSL.",
+      "description": "",
+      "status": "in-development",
+      "lang": "TBD",
+      "license": "TBD",
+      "version": null,
+      "features": [],
+      "install": { "cargo": null, "shell": null, "powershell": null }
+    },
+    {
+      "slug": "hrakert",
+      "name": "Hrakert",
+      "repo": null,
+      "tagline": "A long-term project.",
+      "description": "",
+      "status": "planned",
+      "lang": "TBD",
+      "license": "TBD",
+      "version": null,
+      "features": [],
+      "install": { "cargo": null, "shell": null, "powershell": null }
+    }
+  ],
+  "roadmap": [
+    {
+      "phase": "Phase 0",
+      "title": "Foundations",
+      "status": "done",
+      "progress": 100,
+      "items": [
+        { "text": "kotor-formats round-trips", "done": true },
+        { "text": "kq v0.3.0", "done": true }
+      ]
+    },
+    {
+      "phase": "Phase 1",
+      "title": "Hyperstim and Kolto Tank",
+      "status": "active",
+      "progress": null,
+      "items": [
+        { "text": "Hyperstim", "done": false },
+        { "text": "Kolto Tank", "done": false }
+      ]
+    },
+    {
+      "phase": "Phase 2",
+      "title": "Adrenal",
+      "status": "next",
+      "progress": null,
+      "items": [{ "text": "Adrenal", "done": false }]
+    },
+    {
+      "phase": "Phase 3",
+      "title": "Hrakert",
+      "status": "later",
+      "progress": null,
+      "items": [{ "text": "Long-term work, nothing public yet", "done": false }]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is this legal?",
+      "a": "Yes. Our repositories contain no game assets or copyrighted game code. You need your own legally obtained copy of the games."
+    },
+    {
+      "q": "Do I need the games?",
+      "a": "Yes. Our tools read and extend your installation; they do not replace it."
+    }
+  ],
+  "join": {
+    "intro": "Pick an issue, say hello, open a pull request.",
+    "lookingFor": [
+      {
+        "role": "Rust coders",
+        "detail": "Work on formats, CLI ergonomics and test coverage."
+      },
+      {
+        "role": "Reverse engineers",
+        "detail": "You know Ghidra or IDA and 32-bit Windows binaries."
+      },
+      {
+        "role": "Writers",
+        "detail": "Turn engine knowledge into docs a modder can use."
+      }
+    ],
+    "steps": [
+      "Read the code of conduct.",
+      "Pick a good-first-issue.",
+      "Open a draft pull request early."
+    ],
+    "rePolicy": "We document behaviour in our own words and never copy game code. No game code or assets are committed.",
+    "conduct": "Be kind, assume good faith, credit others."
+  },
+  "greets": {
+    "communities": [
+      {
+        "name": "Deadly Stream",
+        "url": "https://deadlystream.com",
+        "why": "The home of KotOR modding."
+      }
+    ],
+    "priorArt": [
+      {
+        "name": "TSLPatcher",
+        "by": "stoffe",
+        "url": "https://deadlystream.com",
+        "why": "The installer that made compatible mods possible."
+      },
+      {
+        "name": "xoreos",
+        "by": null,
+        "url": "https://xoreos.org",
+        "why": "Open reimplementation research for BioWare's engines."
+      }
+    ],
+    "scroller": "KOLTO LABS PRESENTS ... LIFE SUPPORT FOR THE ODYSSEY ENGINE ... THANKS TO DEADLY STREAM, XOREOS AND EVERY MODDER WHO KEPT THESE GAMES ALIVE ..."
+  },
+  "press": {
+    "boilerplateShort": "Kolto Labs builds open-source tools for Star Wars: Knights of the Old Republic I & II.",
+    "boilerplateLong": "Kolto Labs is an independent, non-commercial open-source collective building file-format libraries, command-line tools, a script extender and a test harness for the Odyssey engine."
+  },
+  "releaseChannels": [
+    { "name": "Medpac", "channel": "stable", "desc": "Tagged releases." }
+  ]
+}

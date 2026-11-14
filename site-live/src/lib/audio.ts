@@ -2,10 +2,9 @@
  * Procedural music + UI sounds, pure WebAudio. No samples, no modules, nothing
  * fetched. Loaded on demand the first time someone turns sound on.
  *
- * The track is an original 2000s keygen/cracktro-style tune (song data in
- * song.ts): G minor at 132 BPM, borrowing Star Wars/KotOR colour (i-bVI-bVII-i,
- * minor iv, rising-fourth fanfares) with a heroic lift to the relative B-flat
- * major. 64 bars, about 1:56:
+ * The legacy fallback is an original procedural electronic menu score
+ * (song data in song.ts): G minor at 132 BPM with a lift to B-flat major.
+ * 64 bars, about 1:56:
  *   intro 8 (filter opens, drums build) / A 16 (G minor) / B 16 (B-flat major)
  *   / breakdown 8 / A' 16 (doubled lead), then it loops back to A.
  * Voices: detuned saw + PWM lead with ping-pong echo, tick-rate chord arpeggio
@@ -19,10 +18,14 @@ import { BARS, BPM, H, R, STEPS_PER_BAR, songBar, type Bar } from './song';
 export const STEP = 60 / BPM / 4; // 16th note
 const BAR = STEP * STEPS_PER_BAR;
 const MUSIC_LEVEL = 0.3;
-const LOOKAHEAD = 0.2;
+const LOOKAHEAD = 2.3;
+const SWEEP_LEAD = 0.2;
 
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
+let sink: AudioNode | null = null;
+let until = Infinity;
+let origin = 0;
 let noise: AudioBuffer | null = null;
 let pulse25: PeriodicWave | null = null;
 let pulse50: PeriodicWave | null = null;
@@ -45,6 +48,8 @@ interface Buses {
   drums: GainNode;
   snare: BiquadFilterNode;
   hats: BiquadFilterNode;
+  srcs: [AudioScheduledSourceNode, number][];
+  sweeps: [number, number, number][];
 }
 let bus: Buses | null = null;
 
@@ -58,10 +63,10 @@ function pulseWave(c: AudioContext, duty: number): PeriodicWave {
   return c.createPeriodicWave(real, imag);
 }
 
-function ensureCtx(): AudioContext {
-  if (ctx) return ctx;
+function ensureCtx(host?: AudioContext): AudioContext {
+  if (ctx && (!host || host === ctx)) return ctx;
   const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-  const c = (ctx = new AC());
+  const c = (ctx = host ?? new AC());
   const comp = c.createDynamicsCompressor();
   comp.threshold.value = -16;
   comp.knee.value = 6;
@@ -86,7 +91,7 @@ function createBuses(c: AudioContext): Buses {
   const out = c.createBiquadFilter();
   out.type = 'highpass';
   out.frequency.value = 32;
-  music.connect(out).connect(master!);
+  music.connect(out).connect(sink ?? master!);
 
   // lead: dry plus a dotted-8th ping-pong echo, darkened in the loop
   const lead = c.createGain();
@@ -143,7 +148,11 @@ function createBuses(c: AudioContext): Buses {
   hatPan.pan.value = 0.25;
   hats.connect(hatPan).connect(drums);
 
-  return { music, out, feedback: [fbl, fbr], lead, arpFilter, padL, padR, drums, snare, hats };
+  return { music, out, feedback: [fbl, fbr], lead, arpFilter, padL, padR, drums, snare, hats, srcs: [], sweeps: [] };
+}
+
+function track(o: AudioScheduledSourceNode, t: number) {
+  bus!.srcs.push([o, t]);
 }
 
 function env(c: AudioContext, t: number, peak: number, attack: number, end: number): GainNode {
@@ -207,10 +216,12 @@ function leadNote(c: AudioContext, bs: Buses, midi: number, t: number, dur: numb
     depth.connect(o1.detune);
     depth.connect(o2.detune);
     vib.start(t);
+    track(vib, t);
     vib.stop(stop);
   }
   for (const o of [o1, o2, pwm]) {
     o.start(t);
+    track(o, t);
     o.stop(stop);
   }
 }
@@ -227,6 +238,7 @@ function doubleNote(c: AudioContext, bs: Buses, midi: number, t: number, dur: nu
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   o.connect(g).connect(bs.lead);
   o.start(t);
+  track(o, t);
   o.stop(t + dur + 0.02);
 }
 
@@ -242,6 +254,7 @@ function bassNote(c: AudioContext, bs: Buses, midi: number, t: number, dur: numb
   const g = env(c, t, gain, 0.004, t + dur);
   o.connect(f).connect(g).connect(bs.music);
   o.start(t);
+  track(o, t);
   o.stop(t + dur + 0.02);
 }
 
@@ -259,6 +272,7 @@ function padChord(c: AudioContext, bs: Buses, notes: readonly number[], t: numbe
       g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.35);
       o.connect(g).connect(side);
       o.start(t);
+      track(o, t);
       o.stop(t + dur + 0.4);
     }
   }
@@ -273,6 +287,7 @@ function noiseHit(c: AudioContext, dest: AudioNode, t: number, dur: number, gain
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   src.connect(g).connect(dest);
   src.start(t, Math.random() * 0.5);
+  track(src, t);
   src.stop(t + dur + 0.01);
 }
 
@@ -288,6 +303,7 @@ function kick(c: AudioContext, bs: Buses, t: number, gain: number) {
   g.gain.exponentialRampToValueAtTime(0.0001, t + 0.34);
   o.connect(g).connect(bs.drums);
   o.start(t);
+  track(o, t);
   o.stop(t + 0.36);
   kicks.push(t);
   if (kicks.length > 8) kicks.shift();
@@ -302,6 +318,7 @@ function snare(c: AudioContext, bs: Buses, t: number, gain: number) {
   const g = env(c, t, gain * 0.8, 0.002, t + 0.09);
   o.connect(g).connect(bs.drums);
   o.start(t);
+  track(o, t);
   o.stop(t + 0.1);
 }
 
@@ -332,9 +349,7 @@ function scheduleStep(bs: Buses, n: number, t: number) {
   const c = ctx!;
 
   if (i === 0) {
-    const f = bs.arpFilter.frequency;
-    f.setValueAtTime(sweepHz(b, 0), t);
-    f.exponentialRampToValueAtTime(sweepHz(b, 1), t + BAR);
+    bs.sweeps.push([t, sweepHz(b, 0), sweepHz(b, 1)]);
     if (p.pad) padChord(c, bs, b.chord.notes, t, BAR);
     // crash on the downbeat of each full-band section
     if (b.bar === 0 && p.snare) noiseHit(c, bs.hats, t, 1.4, 0.3);
@@ -353,6 +368,7 @@ function scheduleStep(bs: Buses, n: number, t: number) {
     g.gain.exponentialRampToValueAtTime(0.0001, t + STEP * 0.95);
     o.connect(g).connect(bs.arpFilter);
     o.start(t);
+    track(o, t);
     o.stop(t + STEP);
   }
 
@@ -394,11 +410,34 @@ function tick() {
   const skip = skipMissed(nextTime, ctx.currentTime, STEP);
   step += skip.steps;
   nextTime = skip.nextTime;
-  while (nextTime < ctx.currentTime + LOOKAHEAD) {
+  const now = ctx.currentTime;
+  bus.srcs = bus.srcs.filter(([, t]) => t >= now);
+  while (nextTime < Math.min(now + LOOKAHEAD, until)) {
     scheduleStep(bus, step, nextTime);
     nextTime += STEP;
     step++;
   }
+  while (bus.sweeps.length && bus.sweeps[0][0] < now + SWEEP_LEAD) {
+    const [t, from, to] = bus.sweeps.shift()!;
+    const f = bus.arpFilter.frequency;
+    f.setValueAtTime(from, t);
+    f.exponentialRampToValueAtTime(to, t + BAR);
+  }
+  if (nextTime >= until && !bus.sweeps.length && timer !== null) {
+    window.clearInterval(timer);
+    timer = null;
+  }
+}
+
+function cancel(bs: Buses, after: number) {
+  for (const [o, t] of bs.srcs) {
+    if (t <= after) continue;
+    o.disconnect();
+    o.stop();
+  }
+  bs.srcs = bs.srcs.filter(([, t]) => t <= after);
+  bs.sweeps = bs.sweeps.filter(([t]) => t <= after);
+  for (let i = kicks.length - 1; i >= 0; i--) if (kicks[i] > after) kicks.splice(i, 1);
 }
 
 /** Fade a bus out fast from wherever its gain is, then cut it loose. */
@@ -408,46 +447,72 @@ function retire(old: Buses, now: number) {
   g.cancelScheduledValues(now);
   g.setValueAtTime(v, now);
   g.setTargetAtTime(0, now, 0.005);
+  cancel(old, now);
   window.setTimeout(() => {
     old.out.disconnect();
     for (const n of old.feedback) n.disconnect();
   }, 100);
 }
 
-export function startMusic() {
-  const c = ensureCtx();
+export interface MusicIO {
+  ctx: AudioContext;
+  out: AudioNode;
+  at?: number;
+}
+
+export function startMusic(io?: MusicIO): number {
+  const c = ensureCtx(io?.ctx);
   if (suspendTimer !== null) window.clearTimeout(suspendTimer);
   suspendTimer = null;
-  void c.resume();
-  if (playing) return;
+  if (!io) void c.resume();
+  if (playing && bus?.music.context === c) return origin;
+  sink = io?.out ?? null;
   playing = true;
+  until = Infinity;
+  if (timer !== null) window.clearInterval(timer);
   step = 0;
   kicks.length = 0;
-  const now = c.currentTime;
+  const now = Math.max(io?.at ?? 0, c.currentTime);
   // Each start gets a fresh bus. Pad tails, held notes, echoes and filter
   // automation from the last run stay on the old bus and fade with it.
-  if (bus) retire(bus, now);
+  if (bus) retire(bus, bus.music.context.currentTime);
   const b = (bus = createBuses(c));
-  nextTime = now + 0.06;
+  nextTime = origin = now + 0.06;
   b.music.gain.setValueAtTime(0.0001, now);
   b.music.gain.exponentialRampToValueAtTime(MUSIC_LEVEL, now + 1.5);
   timer = window.setInterval(tick, 25);
   tick();
   (globalThis as { __koltoPulse?: () => number }).__koltoPulse = pulse;
+  return origin;
 }
 
-export function stopMusic() {
+export function setOutput(out: AudioNode) {
+  if (!sink || out === sink) return;
+  sink = out;
+  if (!bus) return;
+  bus.out.disconnect();
+  bus.out.connect(out);
+}
+
+export function stopMusic(at?: number, fade = 0.6) {
   if (!ctx || !bus || !playing) return;
   playing = false;
   const c = ctx;
+  const now = c.currentTime;
+  const t0 = Math.max(at ?? now, now);
+  until = t0 + fade;
+  cancel(bus, until);
   const g = bus.music.gain;
   const v = Math.max(g.value, 0.0001);
-  g.cancelScheduledValues(c.currentTime);
-  g.setValueAtTime(v, c.currentTime);
-  g.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.6);
-  if (timer !== null) window.clearInterval(timer);
-  timer = null;
+  g.cancelScheduledValues(now);
+  g.setValueAtTime(v, t0);
+  g.exponentialRampToValueAtTime(0.0001, until);
+  if (nextTime >= until && !bus.sweeps.length && timer !== null) {
+    window.clearInterval(timer);
+    timer = null;
+  }
   (globalThis as { __koltoPulse?: () => number }).__koltoPulse = undefined;
+  if (sink) return;
   suspendTimer = window.setTimeout(() => {
     suspendTimer = null;
     if (!playing) void c.suspend();
@@ -479,15 +544,16 @@ function ping(c: AudioContext, freq: number, t: number, gain: number, dest: Audi
 export function blip(kind: 'ok' | 'tick' = 'ok') {
   const c = ensureCtx();
   void c.resume();
+  const out = sink ?? master!;
   const t = c.currentTime + 0.01;
   if (kind === 'ok') {
     // two-note sonar confirm, a rising fifth (G5 to D6) with a faint, muffled echo
-    ping(c, 784, t, 0.07, master!);
-    ping(c, 1175, t + 0.1, 0.06, master!);
+    ping(c, 784, t, 0.07, out);
+    ping(c, 1175, t + 0.1, 0.06, out);
     const far = c.createBiquadFilter();
     far.type = 'lowpass';
     far.frequency.value = 1500;
-    far.connect(master!);
+    far.connect(out);
     ping(c, 1175, t + 0.27, 0.018, far);
   } else {
     // droplet: a quick rising sine blip, the sound of a bubble closing
@@ -496,7 +562,7 @@ export function blip(kind: 'ok' | 'tick' = 'ok') {
     o.frequency.setValueAtTime(650, t);
     o.frequency.exponentialRampToValueAtTime(1800, t + 0.04);
     const g = env(c, t, 0.05, 0.002, t + 0.07);
-    o.connect(g).connect(master!);
+    o.connect(g).connect(out);
     o.start(t);
     o.stop(t + 0.08);
   }

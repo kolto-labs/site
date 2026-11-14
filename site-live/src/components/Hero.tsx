@@ -90,7 +90,7 @@ export function Hero() {
         </div>
         <button type="button" className="hero__sound" onClick={toggleSound}>
           <span aria-hidden="true">♪ </span>
-          {sound ? 'Stop the intro' : 'Hear the intro'}
+          {sound ? 'Stop the intro tune' : 'Play the intro tune'}
         </button>
       </div>
       <p className="hero__static-greets" aria-hidden="true">

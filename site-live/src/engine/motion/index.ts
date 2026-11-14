@@ -1,4 +1,4 @@
-import { dropSlot, slot } from '../core/global';
+import { disposeSlot, dropSlot, slot } from '../core/global';
 import type { Lat } from './kit';
 import { beatPos, gaitOf, idleEase, lockStride, npcZ } from './gait';
 import { enforceInvariants } from './invariants';
@@ -30,6 +30,7 @@ function api(d: MotionDeps): MotionApi {
   const lat: Lat = { E: 0, T: 0, F: 0, Q: 0, P: 1 };
   let idle = 1;
   let last = 0;
+  let disposed = false;
   return {
     gait(kind, id) {
       const s = d.latent.get();
@@ -50,7 +51,14 @@ function api(d: MotionDeps): MotionApi {
     enforceInvariants,
     async mount(canvas, o) {
       const s = await scene(d);
-      return o.signal?.aborted || !canvas.isConnected ? none : s.mount(canvas, o);
+      return disposed || o.signal?.aborted || !canvas.isConnected ? none : s.mount(canvas, o);
+    },
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      disposeSlot('motionScene');
+      dropSlot('motionScene');
+      dropSlot('motion');
     },
   };
 }

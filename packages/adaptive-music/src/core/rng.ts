@@ -17,15 +17,21 @@ export function mulberry32(seed: number): Rng {
   };
 }
 
-const K = { harmony: 0x27d4eb2f, melody: 0x165667b1, rhythm: 0xd3a2646c, motif: 0xb55a4f09 } as const;
-export type StreamName = keyof typeof K;
-export type Streams = { readonly [P in StreamName]: Rng };
-
-export function createStreams(seed: number): Streams {
-  const out = {} as Record<StreamName, Rng>;
-  for (const k of Object.keys(K) as StreamName[]) out[k] = mulberry32(splitmix32((seed ^ K[k]) >>> 0));
-  return out;
+/**
+ * Counter-based randomness (design §6.10). A draw is addressed by its musical position
+ * (stream id, bar, layer, slot...), not by how many draws came before it, so a draw added
+ * in one place shifts nothing anywhere else.
+ */
+export function h32(...k: number[]): number {
+  let a = 0x2545f491;
+  for (const x of k) a = splitmix32((a ^ x) >>> 0);
+  return a;
 }
+
+export const u = (...k: number[]): number => h32(...k) / 4294967296;
+
+/** A short sequential stream that starts at a counter address, for draws that come in a burst. */
+export const at = (...k: number[]): Rng => mulberry32(h32(...k));
 
 export function normal(rng: Rng): number {
   const u1 = 1 - rng();

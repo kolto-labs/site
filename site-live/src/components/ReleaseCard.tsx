@@ -59,7 +59,7 @@ export function NfoDialog({ project }: { project: ProjectView }) {
           <button type="button" className="btn btn--sm nfo-dialog__close" onClick={close}>
             Close <kbd>Esc</kbd>
           </button>
-          {open ? <NfoViewer title={project.name.toUpperCase()} filename={`${project.slug}.txt`} text={projectNfo(project)} /> : null}
+          {open ? <NfoViewer title={project.name.toUpperCase()} text={projectNfo(project)} /> : null}
         </div>
       </dialog>
     </>
@@ -166,13 +166,11 @@ export function ReleaseCard({ project: p, variant = 'compact', headingLevel = 3,
       {full ? <RelLine label="Also uses" refs={alsoUses} /> : null}
       {full ? <RelLine label="Also used by" refs={usedBy} /> : null}
       <dl className="release__info">
-        <InfoRow k="License" v={p.license} />
         <InfoRow k="Language" v={p.lang} />
         {full && p.repo ? <InfoRow k="Source" v={<a href={p.repo}>{repoShort}</a>} /> : null}
         {full && lab ? <InfoRow k="Source" v={<span className="release__private">Not public yet</span>} /> : null}
         {full && p.github ? <InfoRow k="Stars" v={p.github.stars} /> : null}
         {full && p.github?.pushedAt ? <InfoRow k="Last push" v={<time dateTime={p.github.pushedAt}>{p.github.pushedAt.slice(0, 10)}</time>} /> : null}
-        {lab ? null : <InfoRow k="Protection" v={<span className="protect">None. It&rsquo;s open source.</span>} />}
       </dl>
       {full ? (
         <div className="release__body">

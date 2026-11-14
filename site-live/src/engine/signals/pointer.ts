@@ -6,7 +6,7 @@ const HOVER_SEL = 'a, button, summary, [role=button], [data-hover]';
 const RING = 20; // 1 s at 20 Hz
 const HOVER_RING = 32;
 
-/** Pointer position and derivatives, path straightness, hover exploration, touch taps and clicks. */
+/** Pointer position and derivatives, path straightness, recent hover exploration, touch taps and clicks. */
 export function createPointer(hub: Hub): Sensor {
   const f = hub.frame.pointer;
   const fc = hub.frame.clicks;
@@ -58,6 +58,8 @@ export function createPointer(hub: Hub): Sensor {
 
   // Hover: when each element was last counted (weakly keyed), and a ring of count times.
   let entered = new WeakMap<Element, number>();
+  let hoverTimer: ReturnType<typeof setTimeout> | null = null;
+  let hoverElement: Element | null = null;
   const hr = new Float64Array(HOVER_RING);
   let hn = 0;
   let hi = 0;
@@ -87,6 +89,9 @@ export function createPointer(hub: Hub): Sensor {
   }
 
   function leave(): void {
+    if (hoverTimer !== null) clearTimeout(hoverTimer);
+    hoverTimer = null;
+    hoverElement = null;
     resetChain();
     rn = 0;
     ri = 0;
@@ -266,13 +271,33 @@ export function createPointer(hub: Hub): Sensor {
         const t = now(e.timeStamp);
         const prev = entered.get(el);
         if (prev !== undefined && t - prev < 60) return;
-        entered.set(el, t);
-        hr[hi] = t;
-        hi = (hi + 1) % HOVER_RING;
-        if (hn < HOVER_RING) hn++;
+        if (hoverElement === el) return;
+        if (hoverTimer !== null) clearTimeout(hoverTimer);
+        hoverElement = el;
+        const fire = (): void => {
+          hoverTimer = null;
+          if (hoverElement !== el) return;
+          if (f.speed > 0.9) {
+            hoverTimer = setTimeout(fire, 80);
+            return;
+          }
+          const at = hub.clock.now();
+          entered.set(el, at);
+          hr[hi] = at;
+          hi = (hi + 1) % HOVER_RING;
+          if (hn < HOVER_RING) hn++;
+          const kind = el.matches('a') ? 'link' : el.matches('button') ? 'button' : el.matches('summary,[role=button]') ? 'disclosure' : 'card';
+          hub.emit({ type: 'hover', t: at, kind });
+        };
+        hoverTimer = setTimeout(fire, 80);
       }, oc);
 
       window.addEventListener('pointerout', (e) => {
+        if (hoverElement && e.target instanceof Element && hoverElement.contains(e.target) && !(e.relatedTarget instanceof Node && hoverElement.contains(e.relatedTarget))) {
+          if (hoverTimer !== null) clearTimeout(hoverTimer);
+          hoverTimer = null;
+          hoverElement = null;
+        }
         if (e.relatedTarget === null && e.pointerType !== 'touch') leave();
       }, o);
       window.addEventListener('blur', leave, o);
@@ -280,6 +305,9 @@ export function createPointer(hub: Hub): Sensor {
     },
 
     stop() {
+      if (hoverTimer !== null) clearTimeout(hoverTimer);
+      hoverTimer = null;
+      hoverElement = null;
       entered = new WeakMap();
     },
 
@@ -295,10 +323,8 @@ export function createPointer(hub: Hub): Sensor {
       const ry = seen ? clamp01(py / hub.vh) : 0.5;
       pfx = ema(pfx, rx, dt, 0.25);
       pfy = ema(pfy, ry, dt, 0.25);
-      if (import.meta.env.DEV) {
-        psx = ema(psx, rx, dt, 8);
-        psy = ema(psy, ry, dt, 8);
-      }
+      psx = ema(psx, rx, dt, 8);
+      psy = ema(psy, ry, dt, 8);
 
       const present = f.fine && seen && !out;
       if (present) {
@@ -332,6 +358,12 @@ export function createPointer(hub: Hub): Sensor {
 
       f.x = pfx;
       f.y = pfy;
+      f.slowX = psx;
+      f.slowY = psy;
+      const heading = present ? Math.hypot(v1x, v1y) : 0;
+      f.headingX = heading > 0.001 ? v1x / heading : 0;
+      f.headingY = heading > 0.001 ? v1y / heading : 0;
+      f.headingStrength = nsat(heading, 1.5);
       f.speed = nlog(vFast.y, 0.02, 3);
       f.accel = nlog(aFeat.y, 0.5, 50);
       f.jerk = nlog(jFeat.y, 10, 2000);
@@ -345,6 +377,16 @@ export function createPointer(hub: Hub): Sensor {
       fc.fast = nsat(rf, 0.5);
       fc.slow = nsat(rs, 0.08);
       fc.regularity = reg;
+      if (icn) {
+        const intervals = Array.from(ici.slice(0, icn)).sort((a, b) => a - b);
+        fc.medianIci = icn & 1 ? intervals[icn >> 1] : (intervals[icn / 2 - 1] + intervals[icn / 2]) / 2;
+        const bins = [0, 0, 0];
+        for (const interval of ici.slice(0, icn)) bins[interval < 0.35 ? 0 : interval <= 1.5 ? 1 : 2]++;
+        fc.bins = bins.map((n) => n / icn) as [number, number, number];
+      } else {
+        fc.medianIci = 0;
+        fc.bins = [0, 0, 0];
+      }
 
       if (import.meta.env.DEV) {
         raw.vFast = vFast.y;

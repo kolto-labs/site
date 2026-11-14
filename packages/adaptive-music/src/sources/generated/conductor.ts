@@ -1,8 +1,10 @@
 import type { Locator, SceneEventLike } from '../../index';
 import type { Transport } from '../../core/transport';
 import type { Rng } from '../../core/rng';
+import { at as stream, h32, u } from '../../core/rng';
 import type { CueSpec, Gesture, Quantise } from './cuespec';
-import type { Mixer } from './mixer';
+import type { Mixer, Nz } from './mixer';
+import { renoise } from './mixer';
 import type { LayerKey, ScoreProfile } from './profile';
 import type { BarPlan, Ctl, Ev, Inst, Mod, Score } from './score';
 import { G3, clampN, db, idxNear, midiOf, pick, vnoise } from './theory';
@@ -38,6 +40,8 @@ export class Conductor {
   afx: { id: string; g: G<'fx'> } | null = null;
   junk: [number, AudioNode][] = [];
   pk = 0;
+  dk = 0;
+  tex: { to: AudioNode; nz: Nz } | null = null;
 
   constructor(private E: Env, mo: Rng, keep?: { R: readonly number[]; permit: number }) {
     this.R = keep?.R ?? E.profile.rhythms[pick(mo, E.profile.rhythms.map(() => 1))];
@@ -116,16 +120,21 @@ export class Conductor {
   onBar(b: BarPlan): void {
     this.mods = this.mods.filter((m) => m.t1 > b.t - 1);
     this.insts = this.insts.filter((i) => i.t1 > b.t - 1);
-    if (this.plume) this.E.rig().droneLP.frequency.setTargetAtTime(this.plume + 900 * vnoise(this.E.score.seed + 7, b.n), b.t, 0.6);
+    const sd = this.E.score.seed;
+    const rig = this.E.rig();
+    if (this.plume) rig.droneLP.frequency.setTargetAtTime(this.plume + 900 * vnoise(sd + 7, b.n), b.t, 0.6);
+    // W6: noise beds restart every bar at a seeded offset into the 6 s buffer, so no noise cycle repeats
+    rig.noiseBar(b.t, u(sd, 17, b.n) * 6);
+    if (this.tex) this.tex.nz = renoise(this.E.ctx, rig.noise, this.tex.to, this.tex.nz, b.t, u(sd, 17, b.n, 1) * 6);
     const fx = this.afx;
     if (fx) {
-      const u = this.E.score.rh();
-      if (u < (fx.g.p ?? 0) && this.E.loc().visible(fx.id)) {
+      const r = u(sd, 13, b.n);
+      if (r < (fx.g.p ?? 0) && this.E.loc().visible(fx.id)) {
         const g = this.E.ctx.createGain();
         g.gain.value = db(fx.g.lv + 15.5);
         g.connect(this.E.rig().layer('cuefx'));
         this.junk.push([b.t + 3, g]);
-        this.E.play({ t: b.t + Math.min(1 + 2 * Math.floor(u * 16), b.meter - 1) * b.step, v: fx.g.voice, m: 0, d: 0.07, g: 1, l: 'cuefx' }, g);
+        this.E.play({ t: b.t + Math.min(1 + 2 * Math.floor(r * 16), b.meter - 1) * b.step, v: fx.g.voice, m: 0, d: 0.07, g: 1, l: 'cuefx' }, g);
       }
     }
   }
@@ -168,21 +177,19 @@ export class Conductor {
         const [lo, hi] = g.drips;
         const go = (at: number): void => {
           if (this.amb !== ends || rig.gone) return;
+          const r = stream(score.seed, 14, ++this.dk);
           const bus = ctx.createGain();
           bus.gain.value = db(-18 + 15.5);
           const pn = ctx.createStereoPanner();
-          pn.pan.value = (score.rh() - 0.5) * 0.6;
+          pn.pan.value = (r() - 0.5) * 0.6;
           bus.connect(pn).connect(rig.layer('cuefx'));
           this.junk.push([at + 3, pn]);
-          this.E.play({ t: at, v: 'sonar', m: score.rh() < 0.5 ? G3 : G3 - 5, d: 0.35, g: 1, l: 'cuefx' }, bus);
-          tr.at(at + lo + (hi - lo) * score.rh(), go, -1);
+          this.E.play({ t: at, v: 'sonar', m: r() < 0.5 ? G3 : G3 - 5, d: 0.35, g: 1, l: 'cuefx' }, bus);
+          tr.at(at + lo + (hi - lo) * r(), go, -1);
         };
         tr.at(t + lo, go, -1);
       }
     } else if (g.layer === 'texture') {
-      const src = ctx.createBufferSource();
-      src.buffer = rig.noise;
-      src.loop = true;
       const bp = ctx.createBiquadFilter();
       bp.type = 'bandpass';
       bp.frequency.value = 600;
@@ -198,14 +205,15 @@ export class Conductor {
       out.gain.value = db(g.lv + 15.5) * 0.3;
       const lp = ctx.createBiquadFilter();
       lp.frequency.value = this.E.loc().visible(id) ? 20000 : 1200;
-      src.connect(bp).connect(fl).connect(out).connect(lp).connect(rig.layer('cuefx'));
-      src.start(t);
+      bp.connect(fl).connect(out).connect(lp).connect(rig.layer('cuefx'));
+      const tex = (this.tex = { to: bp, nz: renoise(ctx, rig.noise, bp, null, t, 0) });
       lfo.start(t);
       this.drop(ends, lp);
       ends.push((te) => {
         out.gain.setTargetAtTime(0, te, 0.2);
-        src.stop(te + 1.5);
+        tex.nz.s.stop(te + 1.5);
         lfo.stop(te + 1.5);
+        if (this.tex === tex) this.tex = null;
       });
     }
   }
@@ -249,7 +257,7 @@ export class Conductor {
       bus.g.gain.setTargetAtTime(tg, T0, Math.max(0.01, (g.fade[0] * bar) / 3));
       const inst: Inst = {
         id: ++this.n, voice: g.voice, layer: g.layer, cycle: g.cycle, k: g.k, rate: g.rate ?? 1, g: 1,
-        t0: T0, t1: g.bars ? T0 + g.bars * bar : Infinity, sched: T0, seed: (e.id.length * 0.137) % 1, dest: bus.g, tg,
+        t0: T0, t1: g.bars ? T0 + g.bars * bar : Infinity, sched: T0, seed: u(E.score.seed, 15, e.uid), dest: bus.g, tg,
       };
       if (spec.pan === 'sweep') {
         bus.p.pan.setValueAtTime(-0.6, T0);
@@ -292,18 +300,18 @@ export class Conductor {
       const bus = this.bus(spec, e, sub, db(g.lv + 15.5), g.lp ?? 20000, 'cuefx', g.kind === 'motif' ? g.dx ?? 0 : 0);
       this.drop(ends, bus.p);
       const put = (ev: Ev): void => E.tr.at(ev.t, () => E.play(ev, bus.g), e.uid);
-      for (const tm of times) {
+      for (const [j, tm] of times.entries()) {
         if (g.kind === 'motif') {
           this.motif(g, e, tm, step).forEach(put);
           continue;
         }
         const pitched = g.pitch !== undefined && g.pitch < 200;
-        const mk = (t: number, gg: number): Ev => ({
-          t, v: g.voice, m: pitched ? g.pitch! : 62, f: g.pitch && !pitched ? g.pitch : undefined,
-          d: g.dur ?? 0.3, g: gg, l: 'cuefx', s: step, x: g.voice === 'rise' && g.lp ? [g.lp] : undefined,
+        const mk = (t: number, gg: number, k: number): Ev => ({
+          t, v: g.voice, m: pitched ? g.pitch! : 62, f: g.pitch && !pitched ? g.pitch : undefined, d: g.dur ?? 0.3, g: gg, l: 'cuefx', s: step,
+          x: g.voice === 'rise' && g.lp ? [g.lp] : g.voice === 'skitter' ? [h32(E.score.seed, 16, e.uid, spec.gestures.indexOf(g), k)] : undefined,
         });
-        put(mk(tm, 1));
-        if (g.echo) for (let r = 1; r <= 3; r++) put(mk(tm + r * step * 3, Math.pow(g.echo, r)));
+        put(mk(tm, 1, j * 4));
+        if (g.echo) for (let r = 1; r <= 3; r++) put(mk(tm + r * step * 3, Math.pow(g.echo, r), j * 4 + r));
         if (g.duck) {
           for (const k of ['drone', 'pad'] as const) {
             rig.lay[k].c.gain.setTargetAtTime(db(-4), tm, 0.01);

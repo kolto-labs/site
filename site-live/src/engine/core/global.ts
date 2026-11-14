@@ -23,3 +23,9 @@ export function dropSlot(name: string): void {
   const b = globalThis.__koltoEngine?.[ENGINE_VERSION];
   if (b) delete b[name];
 }
+
+/** Dispose an already-created slot value, including one that is still loading. */
+export function disposeSlot(name: string): void {
+  const value = globalThis.__koltoEngine?.[ENGINE_VERSION]?.[name];
+  if (value) void (value as Promise<{ dispose(): void }>).then((instance) => instance.dispose()).catch(() => {});
+}

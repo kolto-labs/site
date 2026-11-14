@@ -1,0 +1,5 @@
+/* Geometry is inline in NotFoundWindow.tsx so the prerendered page holds its size before this file loads. */
+.nf-window {
+  background: #031620;
+  opacity: 0.85;
+}

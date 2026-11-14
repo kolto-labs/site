@@ -1,6 +1,6 @@
 /**
- * Song data for audio.ts: "Kolto Pressure", an original keygen-style tracker
- * tune. G minor verses, a B-flat major lift, a breakdown, then the verse again.
+ * Song data for audio.ts: "Kolto Pressure", an original procedural menu score.
+ * G minor verses, a B-flat major lift, a breakdown, then the verse again.
  * Pure data, no DOM access, so it stays in the lazily loaded audio chunk.
  */
 

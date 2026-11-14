@@ -6,7 +6,7 @@ import type { Rig } from './voices';
 import { pulseWave } from './voices';
 
 export const BASE_DB: Readonly<Record<LayerKey, number>> = {
-  drone: -14.5, pad: 7.5, arp: 14.8, bass: 9, hats: 8, kick: 0, melody: -1, cuep: 0, cuefx: 0,
+  drone: -14.5, pad: 7.5, arp: 14.8, bass: 9, hats: 8, kick: 0, ticks: -4, pulse: -14, glint: -16, melody: -1, cuep: 0, cuefx: 0,
 };
 
 export interface Shared {
@@ -46,9 +46,41 @@ const osc = (c: BaseAudioContext, type: OscillatorType, f: number): OscillatorNo
   o.frequency.value = f;
   return o;
 };
+const WAVE_DUTY = [0.125, 0.1875, 0.25, 0.3125, 0.375] as const;
+
+export interface Nz {
+  s: AudioBufferSourceNode;
+  g: GainNode;
+  t: number;
+}
+
+const XF = 0.05;
+const FADE = [0, 1].map((k) => Float32Array.from({ length: 16 }, (_, i) => Math.sin((Math.PI / 2) * (k ? 1 - i / 15 : i / 15))));
+
+/** Starts the noise again at `off` seconds into the buffer, with a 50 ms equal-power crossfade from `prev` (W6). */
+export function renoise(c: BaseAudioContext, buf: AudioBuffer, to: AudioNode, prev: Nz | null, t: number, off: number): Nz {
+  t = Math.max(t, c.currentTime);
+  // a restart inside the previous fade-in would overlap its curve (setValueCurveAtTime throws): keep the running one
+  if (prev && t < prev.t + XF + 0.01) return prev;
+  const g = c.createGain();
+  g.gain.value = 0;
+  g.gain.setValueCurveAtTime(FADE[0], t, XF);
+  const s = c.createBufferSource();
+  s.buffer = buf;
+  s.loop = true;
+  s.connect(g).connect(to);
+  s.start(t, off);
+  if (prev) {
+    prev.g.gain.cancelScheduledValues(t);
+    prev.g.gain.setValueCurveAtTime(FADE[1], t, XF);
+    prev.s.stop(t + XF + 0.01);
+  }
+  return { s, g, t };
+}
 
 export function makeShared(c: AudioContext, rng: Rng, masterHP: BiquadFilterNode, ui: GainNode): Shared {
-  const noise = c.createBuffer(1, c.sampleRate, c.sampleRate);
+  // 6 s, not 1 s: beds restart at a new offset every bar, and one-shots never loop inside a cycle you can hear (W6)
+  const noise = c.createBuffer(1, c.sampleRate * 6, c.sampleRate);
   const d = noise.getChannelData(0);
   for (let i = 0; i < d.length; i++) d[i] = rng() * 2 - 1;
   return { c, noise, w12: pulseWave(c, 0.125), w25: pulseWave(c, 0.25), w50: pulseWave(c, 0.5), ir: null, masterHP, ui };
@@ -71,9 +103,13 @@ export class Mixer implements Rig {
   w12: PeriodicWave;
   w25: PeriodicWave;
   w50: PeriodicWave;
+  wd: readonly PeriodicWave[];
   kicks: number[] = [];
   music: GainNode;
   stateLP: BiquadFilterNode;
+  tiltLo: BiquadFilterNode;
+  tiltHi: BiquadFilterNode;
+  wet: GainNode | null = null;
   lay = {} as Record<LayerKey, { a: GainNode; b: GainNode; c: GainNode }>;
   padL: StereoPannerNode;
   padR: StereoPannerNode;
@@ -86,6 +122,8 @@ export class Mixer implements Rig {
   droneLP: BiquadFilterNode;
   tremDepth: GainNode;
   srcs: AudioScheduledSourceNode[];
+  nIn: AudioNode;
+  nz: Nz;
   gone = false;
 
   constructor(s: Shared, rng: Rng, lite: boolean, private P: ScoreProfile) {
@@ -94,10 +132,13 @@ export class Mixer implements Rig {
     this.w12 = s.w12;
     this.w25 = s.w25;
     this.w50 = s.w50;
+    this.wd = WAVE_DUTY.map((d) => pulseWave(c, d));
     this.music = gain(c, 0);
     this.stateLP = filt(c, 'lowpass', 2400);
+    this.tiltLo = filt(c, 'lowshelf', 200);
+    this.tiltHi = filt(c, 'highshelf', 3000);
     const sum = c.createGain();
-    sum.connect(this.stateLP).connect(this.music).connect(s.masterHP);
+    sum.connect(this.stateLP).connect(this.tiltLo).connect(this.tiltHi).connect(this.music).connect(s.masterHP);
     for (const k of LAYERS) {
       const a = gain(c, db(BASE_DB[k] + (this.rt(P.home).gain[k] ?? 0)));
       const b = c.createGain();
@@ -119,7 +160,7 @@ export class Mixer implements Rig {
     this.lay.melody.c.connect(echo);
 
     if (!lite) {
-      const wet = gain(c, db(-14));
+      const wet = (this.wet = gain(c, db(-14)));
       const cv = c.createConvolver();
       cv.buffer = s.ir ??= makeIR(c, rng);
       wet.connect(cv).connect(filt(c, 'lowpass', 2500)).connect(sum);
@@ -147,14 +188,13 @@ export class Mixer implements Rig {
     const o2 = osc(c, 'triangle', hz(43));
     o1.connect(dg);
     o2.connect(gain(c, db(-12))).connect(dg);
-    const nb = c.createBufferSource();
-    nb.buffer = s.noise;
-    nb.loop = true;
-    nb.connect(filt(c, 'bandpass', 240, 0.8)).connect(gain(c, db(-24))).connect(dg);
+    this.nIn = filt(c, 'bandpass', 240, 0.8);
+    this.nIn.connect(gain(c, db(-24))).connect(dg);
+    this.nz = renoise(c, s.noise, this.nIn, null, c.currentTime, 0);
     const lfo = osc(c, 'sine', 0.3);
     this.tremDepth = gain(c, 0);
     lfo.connect(this.tremDepth).connect(trem.gain);
-    this.srcs = [o1, o2, nb, lfo];
+    this.srcs = [o1, o2, lfo];
     for (const n of this.srcs) n.start();
   }
 
@@ -179,6 +219,16 @@ export class Mixer implements Rig {
     this.padF.frequency.setTargetAtTime(clampN(p.padHz, 300, 3000), t, 0.5);
     for (const g of this.fb) g.gain.setTargetAtTime(p.echoFb, t, 0.3);
     for (const d of [this.dl, this.dr]) d.delayTime.setTargetAtTime(step * 3, t, 0.2);
+    this.tiltLo.gain.setTargetAtTime(-(p.tilt ?? 0), t, 4);
+    this.tiltHi.gain.setTargetAtTime(p.tilt ?? 0, t, 4);
+    const width = clampN(0.6 + (p.width ?? 0), 0.3, 0.9);
+    this.padL.pan.setTargetAtTime(-width, t, 6);
+    this.padR.pan.setTargetAtTime(width, t, 6);
+    this.wet?.gain.setTargetAtTime(db(-14 + (p.send ?? 0)), t, 3);
+  }
+
+  noiseBar(t: number, off: number): void {
+    if (!this.gone) this.nz = renoise(this.c, this.noise, this.nIn, this.nz, t, off);
   }
 
   pulse(now: number): number {
@@ -195,12 +245,13 @@ export class Mixer implements Rig {
     g.setTargetAtTime(v, t, tau);
   }
 
-  retire(t: number): void {
+  retire(t: number, fade = 0.3): void {
     if (this.gone) return;
     this.gone = true;
     this.music.gain.cancelScheduledValues(t);
-    this.music.gain.setTargetAtTime(0, t, 0.02);
+    this.music.gain.setValueAtTime(this.music.gain.value, t);
+    this.music.gain.linearRampToValueAtTime(0, t + fade);
     this.srcs[0].onended = () => this.music.disconnect();
-    for (const n of this.srcs) n.stop(t + 0.9);
+    for (const n of [...this.srcs, this.nz.s]) n.stop(t + fade);
   }
 }

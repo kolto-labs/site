@@ -1,5 +1,6 @@
 import type { Ev } from './score';
 import type { LayerKey } from './theory';
+import { u } from '../../core/rng';
 import { hz } from './theory';
 
 export interface Rig {
@@ -8,6 +9,7 @@ export interface Rig {
   w12: PeriodicWave;
   w25: PeriodicWave;
   w50: PeriodicWave;
+  wd: readonly PeriodicWave[];
   kicks: number[];
   padL: AudioNode;
   padR: AudioNode;
@@ -45,7 +47,7 @@ function osc(c: Ctx, w: OscillatorType | PeriodicWave, f: number, t: number, end
   return o;
 }
 
-function nz(r: Rig, t: number, end: number, to: AudioNode, off = 0): void {
+function nz(r: Rig, t: number, end: number, to: AudioNode, off = (t * 7.3) % 5): void {
   const s = r.c.createBufferSource();
   s.buffer = r.noise;
   s.loop = true;
@@ -65,10 +67,11 @@ function filt(c: Ctx, type: BiquadFilterType, f: number, q = 1, t = 0): BiquadFi
 
 const lead: Voice = (r, to, e) => {
   const end = e.t + e.d + 0.03;
-  const w = e.kind === 1 ? r.w12 : r.w25;
+  const w = e.du !== undefined ? r.wd[e.du] : e.kind === 1 ? r.w12 : r.w25;
   const o = osc(r.c, w, hz(e.m), e.t, end);
-  const lp = filt(r.c, 'lowpass', 3000);
-  o.connect(lp).connect(env(r.c, e.t, 0.13 * e.g, 0.012, e.t + e.d, Math.max(0, e.d - 0.08))).connect(to);
+  const lp = filt(r.c, 'lowpass', 3000 * (e.fe ?? 1));
+  o.detune.value = e.c ?? 0;
+  o.connect(lp).connect(env(r.c, e.t, 0.13 * e.g, 0.012 * (e.at ?? 1), e.t + e.d, Math.max(0, e.d - 0.08))).connect(to);
   if (e.d > 0.45) {
     const vg = r.c.createGain();
     vg.gain.setValueAtTime(0, e.t + e.d * 0.4);
@@ -77,17 +80,18 @@ const lead: Voice = (r, to, e) => {
   }
   if (e.x) {
     const o2 = osc(r.c, w, hz(e.m), e.t, end);
-    o.detune.value = e.x[0];
-    o2.detune.value = -e.x[0];
+    o.detune.value = e.x[0] + (e.c ?? 0);
+    o2.detune.value = -e.x[0] + (e.c ?? 0);
     o2.connect(lp);
   }
 };
 
 const arp: Voice = (r, to, e) => {
   const n = e.x ?? [60, 60, 60];
-  const o = osc(r.c, r.w25, hz(n[0]), e.t, e.t + e.d + 0.02);
+  const o = osc(r.c, e.du !== undefined ? r.wd[e.du] : r.w25, hz(n[0]), e.t, e.t + e.d + 0.02);
   for (let i = 1; i < 3; i++) o.frequency.setValueAtTime(hz(n[i]), e.t + ((e.s ?? 0.13) / 3) * i);
-  o.connect(env(r.c, e.t, 0.06 * e.g, 0.004, e.t + e.d)).connect(to);
+  o.detune.value = e.c ?? 0;
+  o.connect(env(r.c, e.t, 0.06 * e.g, 0.004 * (e.at ?? 1), e.t + e.d)).connect(to);
 };
 
 const pad: Voice = (r, _to, e) => {
@@ -102,7 +106,7 @@ const pad: Voice = (r, _to, e) => {
 };
 
 const tone = (wave: (r: Rig) => OscillatorType | PeriodicWave, peak: number, att: number): Voice => (r, to, e) => {
-  osc(r.c, wave(r), e.f ?? hz(e.m), e.t, e.t + e.d + 0.03).connect(env(r.c, e.t, peak * e.g, att, e.t + e.d)).connect(to);
+  osc(r.c, wave(r), e.f ?? hz(e.m), e.t, e.t + e.d + 0.03).connect(env(r.c, e.t, peak * e.g, att * (e.at ?? 1), e.t + e.d)).connect(to);
 };
 
 const ring = (decay: number, part: number, glide = 1): Voice => (r, to, e) => {
@@ -127,7 +131,7 @@ const burst = (hp: number, peak: number): Voice => (r, to, e) => {
 const bassSaw: Voice = (r, to, e) => {
   const f = hz(e.m);
   const lp = filt(r.c, 'lowpass', 1800, 2.5, e.t);
-  lp.frequency.exponentialRampToValueAtTime(f * 3, e.t + 0.2);
+  lp.frequency.exponentialRampToValueAtTime(f * 3 * (e.fe ?? 1), e.t + 0.2);
   osc(r.c, 'sawtooth', f, e.t, e.t + e.d + 0.03).connect(lp).connect(env(r.c, e.t, 0.16 * e.g, 0.005, e.t + e.d)).connect(to);
 };
 
@@ -222,7 +226,7 @@ const skitter: Voice = (r, to, e) => {
   const step = Math.max(0.01, (e.s ?? 0.13) / 2);
   const tick = burst(0, 0.06);
   for (let t = e.t, k = 0; t < e.t + e.d; t += step, k++) {
-    if (((k * 2654435761) >>> 0) / 4294967296 < 0.6) tick(r, hp, { ...e, t, d: 0.03 });
+    if (u(e.x?.[0] ?? 0, k) < 0.6) tick(r, hp, { ...e, t, d: 0.03 });
   }
 };
 

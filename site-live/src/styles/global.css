@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KOLTO LABS — COPPERLIST x PHOSPHOR
+   KOLTO LABS — DEEP WATER x PHOSPHOR
    Loud hero, calm text-mode body. Departure Mono for chrome, Plex for prose.
    ========================================================================== */
 
@@ -8,7 +8,7 @@
   src: url('../assets/fonts/DepartureMono-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 :root {
@@ -56,6 +56,18 @@
   --focus: 0 0 0 2px var(--void), 0 0 0 4px var(--vital);
 }
 
+/* DEV-ONLY (USER_MEDIA_UI): show where audio files can be dropped. */
+:root.media-dragging body::after {
+  content: '';
+  position: fixed;
+  z-index: 10000;
+  inset: 10px;
+  border: 2px dashed var(--prime);
+  border-radius: 4px;
+  box-shadow: 0 0 0 9999px rgb(3 19 28 / 35%);
+  pointer-events: none;
+}
+
 *,
 *::before,
 *::after {
@@ -67,6 +79,8 @@ html {
   text-size-adjust: 100%;
   scroll-padding-top: calc(var(--nav-h) + 24px);
   background: var(--void);
+  --kolto-daylight-tint: 1.25%;
+  background-color: color-mix(in srgb, var(--void), #24424d var(--kolto-daylight-tint));
 }
 
 body {
@@ -140,11 +154,28 @@ a {
   color: var(--link);
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+  transition: color 120ms ease, background-color 120ms ease, text-decoration-color 120ms ease;
+}
+a,
+button,
+summary,
+[role='button'] {
+  cursor: pointer;
 }
 a:hover {
   color: var(--void);
   background: var(--link);
   text-decoration: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-reduced-motion='false'] main[data-route-motion='enter'] > .page {
+    animation: route-enter 180ms ease-out both;
+  }
+}
+@keyframes route-enter {
+  from { opacity: 0.84; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 :focus-visible {
@@ -200,6 +231,22 @@ pre {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+/* Keep the animated scramble copy out of flow. The invisible final text owns
+   its width and line wrapping, so random glyphs cannot shift nearby content. */
+.scramble {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+.scramble__sizer {
+  visibility: hidden;
+}
+.scramble__shown {
+  position: absolute;
+  inset: 0 auto auto 0;
+  white-space: inherit;
 }
 
 .skip-link {
@@ -548,7 +595,114 @@ html.crt body {
   }
 }
 
+.reading-progress {
+  position: fixed;
+  z-index: 101;
+  inset: 0 0 auto;
+  height: 3px;
+  pointer-events: none;
+  background: transparent;
+  display: none;
+}
+html[data-app='ready'] .reading-progress {
+  display: block;
+}
+.reading-progress__value {
+  width: 100%;
+  height: 100%;
+  transform: scaleX(var(--kolto-scroll-depth, 0));
+  transform-origin: left center;
+  background: var(--prime);
+  box-shadow: 0 0 var(--kolto-reading-glow, 8px) rgb(79 227 238 / 45%);
+}
+.reading-progress__scroll { height: 2px; }
+.reading-progress__read {
+  height: 1px;
+  transform: scaleX(var(--kolto-reading-signal, 0));
+  background: var(--gold);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--gold) 45%, transparent);
+}
+html[data-pointer-hover='true'] .reading-progress__value {
+  box-shadow: 0 0 11px rgb(79 227 238 / 65%);
+}
+html[data-keyboard-navigation='true'] :focus-visible {
+  outline-offset: 3px;
+  outline-width: 2px;
+}
+
+.projects-empty {
+  max-width: none;
+  margin: 0;
+  padding: 18px 20px;
+  border: 1px solid var(--rule-hi);
+  border-left: 2px solid var(--prime-deep);
+  color: var(--dim);
+  background: rgb(7 33 48 / 55%);
+}
+.projects-empty[data-world-state='R3'] { border-left-color: #66818a; }
+.projects-empty[data-world-state^='T'] { border-left-color: var(--prime); }
+html[data-presence='away'] .loading__signal { opacity: 0.35; }
+html[data-presence='active'] .loading__signal { opacity: 1; }
+.loading[data-world-state='R3'] .loading__signal { color: #66818a; }
+.loading[data-world-state^='T'] .loading__signal { color: var(--prime); }
+.kt[data-world-state='R3'] .kt__fluid rect { fill: #66818a; }
+.kt[data-world-state^='T'] .kt__fluid rect { fill: #7dff9a; }
+.print-engine-mark { display: none; }
+
 @media print {
+  :root {
+    color-scheme: light;
+    --void: #fff;
+    --panel: #fff;
+    --panel-2: #fff;
+    --rule: #bbb;
+    --rule-hi: #888;
+    --ink: #111;
+    --ink-hi: #000;
+    --dim: #444;
+    --link: #111;
+    --prime: #111;
+    --prime-deep: #444;
+    --ember: #111;
+    --vital: #111;
+    --gold: #111;
+    --sith: #111;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    font-size: 11pt;
+    overflow: visible !important;
+  }
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  * {
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+  body::before,
+  body::after {
+    display: none !important;
+  }
+  .page {
+    max-width: none;
+    padding-inline: 0;
+  }
+  html[data-world-state='R3'] .foot { border-top-style: dashed !important; }
+  .print-engine-mark {
+    display: block;
+    margin: 0.5rem var(--gutter) 1rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid #888;
+    font: 9pt var(--font-pixel);
+  }
+  .print-engine-mark[data-world-state='R3'] { border-top-style: dashed; }
+  .print-engine-mark[data-world-state^='T'] { font-weight: 700; }
   [data-reveal] {
     opacity: 1 !important;
     clip-path: none !important;
@@ -557,9 +711,35 @@ html.crt body {
     transform: none !important;
   }
   .bbs,
+  .foot__policy,
+  .reading-progress,
+  .jump,
   .hero__fx,
   .hero__sound,
-  .crt-overlay {
+  .crt-overlay,
+  .policy-dialog,
+  .site-settings,
+  .btn {
     display: none !important;
+  }
+  a,
+  a:hover {
+    color: #111 !important;
+    background: none !important;
+    text-decoration: underline;
+  }
+  .release-stack > li,
+  .stats-chart,
+  .page-head {
+    break-inside: avoid;
+  }
+  .foot {
+    margin-top: 24pt;
+    border-top: 1px solid #888;
+    background: #fff;
+  }
+  .page-head {
+    padding-block: 0 12pt;
+    margin-bottom: 18pt;
   }
 }

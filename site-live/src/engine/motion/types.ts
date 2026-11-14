@@ -39,4 +39,5 @@ export interface MotionApi {
   steer: typeof steer;
   enforceInvariants: typeof enforceInvariants;
   mount(canvas: HTMLCanvasElement, o: MountOpts): Promise<Placement>;
+  dispose(): void;
 }

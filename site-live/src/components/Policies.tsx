@@ -4,13 +4,15 @@ import { content } from '../content';
 import { Md } from './Md';
 import { EXTRA_KEYS, MENU } from './Nav';
 import '../styles/policy.css';
+import { useWorld } from '../engine/react';
 
 /** Keyboard help, built from the live hotkey map so it can't drift from it. */
 function KeyboardHelp() {
+  const world = useWorld();
   const keys = [...MENU.map((m) => ({ key: m.key, label: m.label })), ...EXTRA_KEYS];
   return (
-    <div className="md policy-dialog__body">
-      <p>Press the bracketed letter in the menu to jump there.</p>
+    <div className="md policy-dialog__body" data-world-state={world?.state ?? 'R0'}>
+      <p>Press ? to open this list. Press a bracketed menu letter to jump there.</p>
       <dl className="policy-keys">
         {keys.map((k) => (
           <div key={k.key}>
@@ -28,7 +30,6 @@ function KeyboardHelp() {
 }
 
 export const POLICIES = [
-  { id: 're-policy', title: 'Reverse-engineering policy', body: <Md source={content.join.rePolicy} className="policy-dialog__body" /> },
   { id: 'code-of-conduct', title: 'Code of conduct', body: <Md source={content.join.conduct} className="policy-dialog__body" /> },
   { id: 'accessible-navigation', title: 'Accessible navigation', body: <KeyboardHelp /> },
 ] as const;
@@ -73,7 +74,13 @@ export function PolicyDialogs() {
     for (const p of POLICIES) {
       const d = refs.current[p.id];
       if (!d) continue;
-      if (p.id === want && !d.open) d.showModal();
+      if (p.id === want && !d.open) {
+        if (!lastTrigger) {
+          const active = document.activeElement;
+          lastTrigger = active instanceof HTMLElement && active !== document.body ? active : null;
+        }
+        d.showModal();
+      }
       else if (p.id !== want && d.open) d.close();
     }
   }, [hash, key]);

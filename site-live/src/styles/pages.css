@@ -61,43 +61,33 @@
 
 /* ---------- home ---------- */
 
-.home-nfo__grid {
+.home-brief__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 330px);
   gap: 28px;
   align-items: start;
 }
-.home-nfo__side {
+.home-brief__intro {
+  max-width: 52ch;
+  margin: 0;
+  padding: 18px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-hi);
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.5;
+}
+.home-brief__side {
   display: grid;
   gap: 28px;
 }
 @media (max-width: 1000px) {
-  .home-nfo__grid {
+  .home-brief__grid {
     grid-template-columns: minmax(0, 1fr);
   }
-  .home-nfo__side {
+  .home-brief__side {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   }
-}
-
-.diz {
-  margin: 0;
-  container-type: inline-size;
-}
-.diz__cap {
-  font-family: var(--font-pixel);
-  font-size: var(--px-1);
-  color: var(--dim);
-  margin-bottom: 8px;
-}
-.diz__pre {
-  margin: 0;
-  font-family: var(--font-pixel);
-  font-size: min(11px, calc(100cqw / (45 * 0.63637)));
-  line-height: 1.27273;
-  color: var(--prime);
-  white-space: pre;
-  overflow: hidden;
 }
 
 .chan-list {
@@ -250,6 +240,9 @@
   gap: clamp(32px, 6vw, 80px);
   align-items: start;
 }
+.page--about .doc {
+  padding-block: 4px 24px;
+}
 .doc__toc {
   position: sticky;
   top: calc(var(--nav-h) + 28px);
@@ -302,6 +295,21 @@
   .doc__toc {
     position: static;
   }
+}
+
+/* ---------- FAQ and About page breathing room ---------- */
+.page--about .doc__body {
+  padding-top: 6px;
+}
+.page--about .doc__section:last-child {
+  margin-bottom: 20px;
+}
+.page--faq .faq {
+  margin-inline: auto;
+  padding-bottom: 14px;
+}
+.page--faq .faq details {
+  scroll-margin-top: calc(var(--nav-h) + 24px);
 }
 
 /* ---------- projects ---------- */
@@ -596,6 +604,13 @@
   font-size: var(--px-1);
   line-height: 1.6;
   color: var(--dim);
+}
+@media (max-width: 480px) {
+  /* Snapshot and live timestamps wrap differently at phone widths. Keep the
+     following project heading in place while the cached data refreshes. */
+  .datasrc {
+    min-height: 3lh;
+  }
 }
 .datasrc a {
   color: var(--ink);

@@ -67,7 +67,7 @@ export function pick(rng: Rng, w: readonly number[]): number {
   return w.length - 1;
 }
 
-export const LAYERS: readonly LayerKey[] = ['drone', 'pad', 'arp', 'bass', 'hats', 'kick', 'melody', 'cuep', 'cuefx'];
+export const LAYERS: readonly LayerKey[] = ['drone', 'pad', 'arp', 'bass', 'hats', 'kick', 'ticks', 'pulse', 'glint', 'melody', 'cuep', 'cuefx'];
 
 export class Harmony {
   m: Scale;
@@ -75,7 +75,7 @@ export class Harmony {
   def: StateDef;
   hist: number[] = [];
   cur: Chord;
-  constructor(private rng: Rng, private P: ScoreProfile) {
+  constructor(private P: ScoreProfile) {
     this.state = P.initial;
     this.def = P.states[P.initial];
     this.m = P.scales[this.def.mode];
@@ -103,7 +103,7 @@ export class Harmony {
     });
   }
 
-  next(slot: number, perSlots: number, grav: readonly number[], tMid: boolean, noCad: boolean, pivotFrom?: Chord): Chord {
+  next(r: Rng, slot: number, perSlots: number, grav: readonly number[], tMid: boolean, noCad: boolean, pivotFrom?: Chord): Chord {
     const i = slot % perSlots;
     const m = this.m;
     let d: number;
@@ -116,11 +116,10 @@ export class Harmony {
     } else if (!noCad && i === perSlots - 1) {
       d = 0;
     } else if (!noCad && i === perSlots - 2) {
-      d = pick(this.rng, this.weights(this.cur, [], this.def.penult ?? [0, 1, 2, 5]));
+      d = pick(r, this.weights(this.cur, [], this.def.penult ?? [0, 1, 2, 5]));
     } else {
-      d = pick(this.rng, this.weights(this.cur, grav));
+      d = pick(r, this.weights(this.cur, grav));
     }
-    const r = this.rng;
     const u = r();
     const u2 = r();
     const u3 = r();

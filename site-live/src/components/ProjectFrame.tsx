@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import type { FrameNode } from '../content/dependency-tree';
+import { FrameTrace, useFrameTrace } from '../placements/cards/FrameTrace';
 import { ReleaseCard } from './ReleaseCard';
 
 /** Heading level for a node: roots sit under the page's h2 group rules. */
@@ -27,15 +29,19 @@ export function ProjectFrame({ node }: { node: FrameNode }) {
   const H = `h${levelFor(node)}` as 'h3' | 'h4' | 'h5' | 'h6';
   const labelId = `frame-${p.slug}`;
   const listId = `frame-${p.slug}-list`;
+  const ref = useRef<HTMLDivElement>(null);
+  const on = useFrameTrace(ref);
   const count = `used by ${node.usedByCount} ${node.usedByCount === 1 ? 'project' : 'projects'}`;
   return (
     <div
+      ref={ref}
       role="group"
       className={`frame frame--${p.status}${node.lab ? ' frame--lab' : ''}`}
       id={p.slug}
       aria-labelledby={labelId}
       data-level={Math.min(node.level, 3)}
     >
+      <FrameTrace on={on} />
       <H className="frame__label" id={labelId} aria-label={`${p.name}, ${count}`}>
         <span className="frame__glyph" aria-hidden="true">
           ╡

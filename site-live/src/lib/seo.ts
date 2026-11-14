@@ -149,6 +149,7 @@ export function headHtml(h: Head): string {
     `<meta name="description" content="${esc(h.description)}">`,
     `<meta name="robots" content="${h.robots}">`,
     h.canonical && `<link rel="canonical" href="${esc(h.canonical)}">`,
+    `<link rel="alternate" type="application/atom+xml" title="Kolto Labs updates" href="${SITE_URL}/feed.xml">`,
     `<meta property="og:site_name" content="Kolto Labs">`,
     `<meta property="og:type" content="${h.ogType}">`,
     `<meta property="og:title" content="${esc(h.title)}">`,

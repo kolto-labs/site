@@ -59,6 +59,23 @@ ${ROUTES.map((r) => `  <url><loc>${SITE_URL}${hrefFor(r)}</loc><lastmod>${today}
 write('sitemap.xml', sitemap);
 write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 
+// The footer links to this release feed; use stable GitHub release URLs as entry IDs.
+const xml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const releases = snapshotAggregate.listed.filter((p) => p.release && !p.release.prerelease)
+  .sort((a, b) => b.release.publishedAt.localeCompare(a.release.publishedAt));
+const feedUpdated = releases[0]?.release.publishedAt || new Date().toISOString();
+write('feed.xml', `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Kolto Labs updates</title>
+  <id>${SITE_URL}/feed.xml</id>
+  <link href="${SITE_URL}/feed.xml" rel="self"/>
+  <link href="${SITE_URL}/"/>
+  <updated>${xml(feedUpdated)}</updated>
+  <author><name>Kolto Labs</name></author>
+${releases.map((p) => `  <entry><title>${xml(p.name)} ${xml(p.release.tag)}</title><id>${xml(p.release.url)}</id><link href="${xml(p.release.url)}"/><updated>${xml(p.release.publishedAt)}</updated><summary>${xml(plain(p.description || p.tagline || ''))}</summary></entry>`).join('\n')}
+</feed>
+`);
+
 const statusWord = { released: 'released', 'in-development': 'in development', planned: 'planned', public: 'public repository' };
 const projectLine = (p) =>
   `- ${p.repo ? `[${p.name}](${p.repo})` : p.name} (${statusWord[p.status]}; ${p.lang}; ${p.license}${p.version ? `; v${p.version}` : ''}):${p.tagline ? ` ${p.tagline.replace(/[^.!?:]$/, '$&.')}` : ''}${p.description && p.description !== p.tagline ? ` ${plain(p.description)}` : ''}`;
@@ -132,6 +149,9 @@ const headers = `/*
 /manifest.webmanifest
   Content-Type: application/manifest+json
   Cache-Control: public, max-age=86400
+
+/feed.xml
+  Content-Type: application/atom+xml; charset=utf-8
 
 /llms.txt
   Content-Type: text/plain; charset=utf-8

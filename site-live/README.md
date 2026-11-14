@@ -1,4 +1,4 @@
-# swkotor.org
+# kolto-labs.org
 
 The Kolto Labs website. Vite + React + TypeScript, every route prerendered to static HTML, served as Cloudflare Workers static assets.
 
@@ -25,7 +25,7 @@ Markdown fields (`description`, `body`, `a`, `rePolicy`, `conduct`, `nameUsage`,
 Links that are still placeholders live in `LINKS` in `src/content/index.ts`:
 - the contact email
 
-The site URL comes from `siteUrl` in the content file. The default is `https://swkotor.org`.
+The site URL comes from `siteUrl` in the content file. The default is `https://kolto-labs.org`.
 
 ## Turning the Join page on or off
 

@@ -715,7 +715,6 @@ html[data-presence='active'] .loading__signal { opacity: 1; }
   .reading-progress,
   .jump,
   .hero__fx,
-  .hero__sound,
   .crt-overlay,
   .policy-dialog,
   .site-settings,

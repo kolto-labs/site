@@ -61,7 +61,8 @@
 
 /* ---------- home ---------- */
 
-.home-brief__grid {
+.home-brief__grid,
+.home-nfo__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 330px);
   gap: 28px;
@@ -77,17 +78,40 @@
   font-size: clamp(18px, 2vw, 24px);
   line-height: 1.5;
 }
-.home-brief__side {
+.home-brief__side,
+.home-nfo__side {
   display: grid;
   gap: 28px;
 }
 @media (max-width: 1000px) {
-  .home-brief__grid {
+  .home-brief__grid,
+.home-nfo__grid {
     grid-template-columns: minmax(0, 1fr);
   }
-  .home-brief__side {
+  .home-brief__side,
+.home-nfo__side {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   }
+}
+
+.diz {
+  margin: 0;
+  container-type: inline-size;
+}
+.diz__cap {
+  font-family: var(--font-pixel);
+  font-size: var(--px-1);
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+.diz__pre {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: min(11px, calc(100cqw / (45 * 0.63637)));
+  line-height: 1.27273;
+  color: var(--prime);
+  white-space: pre;
+  overflow: hidden;
 }
 
 .chan-list {

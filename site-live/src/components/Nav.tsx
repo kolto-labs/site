@@ -151,7 +151,7 @@ export function Nav() {
           </ul>
         </nav>
         <div className="bbs__toggles">
-          <button type="button" className="bbs__toggle" aria-pressed={sound} onClick={toggleSound} aria-keyshortcuts="M" aria-label="Sound" title="Music and UI sounds (M)">
+          <button type="button" className="bbs__toggle" data-sound-toggle aria-pressed={sound} onClick={toggleSound} aria-keyshortcuts="M" aria-label="Sound" title="Music and UI sounds (M)">
             <span aria-hidden="true">♪</span>
             <span className="bbs__toggle-label">
               <span className="bbs__toggle-name bbs__toggle-name--hide-sm">Sound</span> <b>{sound ? 'ON' : 'OFF'}</b>

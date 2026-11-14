@@ -136,6 +136,15 @@
   font-weight: 400;
   color: var(--ink);
 }
+.bbs__toggle--settings {
+  width: 32px;
+  padding: 0;
+  justify-content: center;
+}
+.bbs__toggle--settings svg {
+  width: 16px;
+  height: 16px;
+}
 .bbs__toggle:hover {
   color: var(--ink-hi);
   border-color: var(--prime-deep);

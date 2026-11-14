@@ -1,7 +1,29 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { USER_MEDIA_UI } from '../flags';
+import { getEngine } from '../engine';
 
 const CRT_KEY = 'kolto:crt';
+const SOUND_KEY = 'kolto:sound';
+const SOUND_COOKIE = 'kolto_sound';
+
+function readSound(): boolean {
+  try {
+    const choice = document.cookie.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${SOUND_COOKIE}=`))?.split('=')[1];
+    if (choice === 'on' || choice === 'off') return choice === 'on';
+  } catch {
+    // Fall back to the device preference when cookies are unavailable.
+  }
+  return readKey(SOUND_KEY) !== 'off';
+}
+
+function writeSound(on: boolean) {
+  writeKey(SOUND_KEY, on ? 'on' : 'off');
+  try {
+    document.cookie = `${SOUND_COOKIE}=${on ? 'on' : 'off'}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+  } catch {
+    // localStorage still remembers the choice when cookies are blocked.
+  }
+}
 
 /* ---------- sound choices: music source, tempo, visits ---------- */
 
@@ -172,7 +194,7 @@ function writeCrt(on: boolean) {
 interface Prefs {
   crt: boolean;
   toggleCrt: () => void;
-  /** Sound is always off on load (no autoplay); it only turns on from a click or key press. */
+  /** Enabled on a first visit; an explicit choice is remembered on this device. */
   sound: boolean;
   toggleSound: () => void;
   blip: (kind?: 'ok' | 'tick') => void;
@@ -217,7 +239,9 @@ async function setRoutedSound(on: boolean): Promise<void> {
     // The user may toggle again while the shared engine chunk is loading. Do
     // not let an older request apply after the newer intent has taken over.
     if (request !== soundRequest) return;
-    await (await engine.audio()).setEnabled(on);
+    const audio = await engine.audio();
+    if (request !== soundRequest) return;
+    await audio.setEnabled(on);
   } catch {
     if (request !== soundRequest) return;
     // Keep the existing standalone tune available if the package chunk or host cannot start.
@@ -241,9 +265,36 @@ async function playRoutedBlip(kind: 'ok' | 'tick'): Promise<void> {
 
 export function PrefsProvider({ children }: { children: ReactNode }) {
   const [crt, setCrt] = useState(false);
-  const [sound, setSound] = useState(false);
-  const soundRef = useRef(false);
+  const [sound, setSound] = useState(true);
+  const soundRef = useRef(true);
   const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const enabled = readSound();
+    soundRef.current = enabled;
+    setSound(enabled);
+    const failed = () => {
+      if (mounted && soundRef.current) {
+        soundRef.current = false;
+        setSound(false);
+      }
+    };
+    if (enabled) void setRoutedSound(true).catch(failed);
+    const unlock = (event: Event) => {
+      if (!event.isTrusted || !soundRef.current) return;
+      if (event.target instanceof Element && event.target.closest('[data-sound-toggle]')) return;
+      if (event instanceof KeyboardEvent && (event.ctrlKey || event.metaKey || event.altKey || event.repeat || event.key.toLowerCase() === 'm')) return;
+      const audio = getEngine()?.audioIfLoaded();
+      if (audio && audio.state !== 'running') void audio.setEnabled(true).catch(failed);
+    };
+    for (const name of ['pointerdown', 'touchend', 'keydown']) window.addEventListener(name, unlock);
+    return () => {
+      mounted = false;
+      for (const name of ['pointerdown', 'touchend', 'keydown']) window.removeEventListener(name, unlock);
+      void setRoutedSound(false).catch(() => {});
+    };
+  }, []);
 
   useEffect(() => {
     setCrt(readCrt());
@@ -269,6 +320,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     const next = !soundRef.current;
     soundRef.current = next;
     setSound(next);
+    writeSound(next);
     // Loading or starting can fail (a dropped chunk, a refused audio context): then sound is off again.
     void setRoutedSound(next).catch(() => {
         if (next && soundRef.current) {

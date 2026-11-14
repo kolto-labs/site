@@ -457,7 +457,10 @@ export function createHost(o: AdaptiveMusicOptions): AdaptiveMusic {
     },
     async setEnabled(on) {
       guard();
-      if (on === enabled) return;
+      if (on === enabled) {
+        if (on && ctx && ctx.state !== 'running') await ctx.resume();
+        return;
+      }
       enabled = on;
       const g = ++gen;
       if (on) {

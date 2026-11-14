@@ -113,7 +113,7 @@ export function SiteSettingsButton() {
       <button
         ref={button}
         type="button"
-        className="bbs__toggle"
+        className="bbs__toggle bbs__toggle--settings"
         onClick={(e) => openSiteSettings(e.currentTarget)}
         aria-haspopup="dialog"
         aria-keyshortcuts="T"
@@ -121,7 +121,6 @@ export function SiteSettingsButton() {
         title="Site settings (T)"
       >
         <Gear />
-        <span className="bbs__toggle-label bbs__toggle-name--settings">Settings</span>
       </button>
       <dialog
         ref={dialog}
@@ -154,7 +153,7 @@ export function SiteSettingsButton() {
 
             <section aria-labelledby="ss-sound">
               <h3 id="ss-sound">Sound</h3>
-              <label className="site-settings__opt">
+              <label className="site-settings__opt" data-sound-toggle>
                 <input type="checkbox" checked={sound} onChange={toggleSound} />
                 Play sound
               </label>

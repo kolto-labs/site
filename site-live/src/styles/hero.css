@@ -183,32 +183,6 @@
   justify-content: center;
 }
 
-.hero__sound {
-  position: absolute;
-  right: var(--gutter);
-  top: 16px;
-  z-index: 2;
-  appearance: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-  min-height: 36px;
-  padding: 6px 12px;
-  font-family: var(--font-pixel);
-  font-size: var(--px-1);
-  color: var(--prime);
-  background: color-mix(in srgb, var(--void) 72%, transparent);
-  border: 1px solid var(--prime-deep);
-  cursor: pointer;
-}
-.hero__sound:hover {
-  background: var(--prime);
-  color: var(--void);
-}
-.hero__sound[aria-pressed='true'] {
-  color: var(--void);
-  background: var(--prime);
-}
 
 .hero__static-greets {
   display: none;
@@ -258,11 +232,6 @@
   }
   .hero__kicker {
     font-size: 16.5px;
-  }
-  .hero__sound {
-    position: static;
-    margin: 18px auto 0;
-    display: flex;
   }
 }
 

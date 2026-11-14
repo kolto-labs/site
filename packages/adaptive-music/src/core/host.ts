@@ -324,7 +324,7 @@ export function createHost(o: AdaptiveMusicOptions): AdaptiveMusic {
         intr = null;
         if (!enabled) return;
         const s = c.state as string;
-        set(s === 'running' ? 'running' : s === 'interrupted' ? 'interrupted' : 'suspended');
+        set(s === 'running' ? (live ? 'running' : 'starting') : s === 'interrupted' ? 'interrupted' : 'suspended');
         if (s === 'interrupted') {
           const a = (intr = new AbortController());
           const h = (): void => {
@@ -342,13 +342,10 @@ export function createHost(o: AdaptiveMusicOptions): AdaptiveMusic {
       });
     }
     const c = ctx;
-    let to: ReturnType<typeof setTimeout> | undefined;
-    const rp = Promise.race([
-      c.resume().then(() => true, () => false),
-      new Promise<boolean>((r) => {
-        to = setTimeout(r, 4000, false);
-      }),
-    ]);
+    // Autoplay may stay suspended until a trusted gesture. Keep the requested
+    // start alive so resuming the context can finish it without an off/on cycle.
+    const rp = c.resume().then(() => true, () => false);
+    if (c.state !== 'running') set('suspended');
     let S: PlaySource | null = null;
     let fail: unknown;
     try {
@@ -360,7 +357,6 @@ export function createHost(o: AdaptiveMusicOptions): AdaptiveMusic {
       fail = err;
     }
     const ok = await rp;
-    clearTimeout(to);
     if (g !== gen) return;
     if (fail || !S) {
       enabled = false;

@@ -197,6 +197,8 @@ interface Prefs {
   /** Enabled on a first visit; an explicit choice is remembered on this device. */
   sound: boolean;
   toggleSound: () => void;
+  /** Start enabled-but-blocked audio on the first click; otherwise toggle it. */
+  activateSound: () => void;
   blip: (kind?: 'ok' | 'tick') => void;
   reducedMotion: boolean;
   music: MusicSource;
@@ -234,6 +236,12 @@ const loadAudio = (): Promise<AudioModule> =>
 async function setRoutedSound(on: boolean): Promise<void> {
   const request = ++soundRequest;
   try {
+    // Preserve the browser's trusted-gesture window when the engine is ready.
+    const ready = getEngine()?.audioIfLoaded();
+    if (ready) {
+      await ready.setEnabled(on);
+      return;
+    }
     const { startEngine } = await import('../engine');
     const engine = await startEngine();
     // The user may toggle again while the shared engine chunk is loading. Do
@@ -288,10 +296,11 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
       const audio = getEngine()?.audioIfLoaded();
       if (audio && audio.state !== 'running') void audio.setEnabled(true).catch(failed);
     };
-    for (const name of ['pointerdown', 'touchend', 'keydown']) window.addEventListener(name, unlock);
+    const gestures = ['pointerdown', 'pointerup', 'click', 'touchend', 'keydown'];
+    for (const name of gestures) window.addEventListener(name, unlock);
     return () => {
       mounted = false;
-      for (const name of ['pointerdown', 'touchend', 'keydown']) window.removeEventListener(name, unlock);
+      for (const name of gestures) window.removeEventListener(name, unlock);
       void setRoutedSound(false).catch(() => {});
     };
   }, []);
@@ -330,6 +339,19 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
       });
   }, []);
 
+  const activateSound = useCallback(() => {
+    if (soundRef.current && getEngine()?.audioIfLoaded()?.state !== 'running') {
+      void setRoutedSound(true).catch(() => {
+        if (soundRef.current) {
+          soundRef.current = false;
+          setSound(false);
+        }
+      });
+      return;
+    }
+    toggleSound();
+  }, [toggleSound]);
+
   const blip = useCallback(
     (kind: 'ok' | 'tick' = 'ok') => {
       if (!sound) return;
@@ -346,6 +368,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
       toggleCrt,
       sound,
       toggleSound,
+      activateSound,
       blip,
       reducedMotion,
       music,
@@ -356,7 +379,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
       setVisits: soundChoices.setVisits,
       forgetVisits: soundChoices.forgetVisits,
     }),
-    [crt, toggleCrt, sound, toggleSound, blip, reducedMotion, music, tempo, visits],
+    [crt, toggleCrt, sound, toggleSound, activateSound, blip, reducedMotion, music, tempo, visits],
   );
   return <PrefsContext.Provider value={value}>{children}</PrefsContext.Provider>;
 }

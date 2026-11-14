@@ -38,7 +38,9 @@ export function render(g: CanvasRenderingContext2D, S: Sim, bg: Bg, still: boole
   }
 
   WIN.forEach(([x, y, c], i) => {
-    const on = still ? hash(i) > 0.35 : Math.sin(tm * 0.05 * (1 + (i % 5) * 0.2) + i * 1.7) > -0.4;
+    const on = still
+      ? st !== 'R1' && hash(i) > 0.35
+      : Math.sin(tm * 0.05 * (1 + (i % 5) * 0.2) + i * 1.7) > -0.4;
     if (on) rect(g, c ? COL.cyan : '#ffd27a', X0(x), Y(y), 3, 3, 0.85);
   });
   const hall = 0.2 + 0.7 * k.hall;
@@ -122,7 +124,7 @@ export function render(g: CanvasRenderingContext2D, S: Sim, bg: Bg, still: boole
   }
   rect(g, k.dark > 0.5 ? COL.rim : COL.kolto, X0(L.vx), Y(fl) - 1, 1, 4);
 
-  for (const b of S.parts) {
+  for (const b of still ? [] : S.parts) {
     const x = X0(b.x);
     const y = Y(b.y);
     if (b.col === 0) {

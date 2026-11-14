@@ -89,11 +89,11 @@ const lamp = (S: Sim, R: Run, len = 0.32): number => {
 };
 const crate = (S: Sim, x: number, y: number, a: number, lit = 1): void => S.put(X.crate, x, y, a, S.env.state === 'R3' ? 0 : lit);
 
-function team(S: Sim, R: Run, n: number, x0: number, x1: number, acc: string, back: boolean, gap: number, kind: Kind = 'loader'): Tick {
+function team(S: Sim, R: Run, n: number, x0: number, x1: number, acc: string, back: boolean, gap: number): Tick {
   const T = R.e.duration;
   const dir = Math.sign(x1 - x0) || 1;
   const items = Array.from({ length: n }, (_, i) => {
-    const a = walker(S, R, kind, 'suit', x0, { acc, alpha: 0 });
+    const a = walker(S, R, 'loader', 'suit', x0, { acc, alpha: 0 });
     return { a, legs: plan(x0, x1 - dir * i * 3, 0.4 + i * gap, T, S.gait('loader', a.id).speed, back) };
   });
   return (p, dt) => {
@@ -762,17 +762,18 @@ export const MOTION: MotionMap = {
       const sd = R.e.variant.side;
       const [b0, b1] = bandY(L.sch);
       const ym = (b0 + b1) / 2;
-      const a = S.add(R, actor('selkath', 'selw', 0, ym, S.nid(), { alpha: 0, dir: sd as 1 | -1, z: 1 }));
+      const a = actor('selkath', 'selw', 0, ym, S.nid(), { alpha: 0, dir: sd as 1 | -1, z: 1 });
       const xs = VX - sd * 70;
       const xe = VX + sd * 70;
       const fs = Array.from({ length: 8 }, () =>
-        fish(S, R, VX + (R.r() - 0.5) * 80, b0 + R.r() * (b1 - b0), { alpha: 0, sc: 0.7, vx: -sd * 3, gid: R.e.uid }),
+        fish(S, R, VX + (R.r() - 0.5) * 80, b0 + R.r() * (b1 - b0), { alpha: 0, sc: 0.7, vx: -sd * 3 }),
       );
       return (p, dt) => {
         const u = ramp(p, 0.04, 0.96);
         a.x = lerp(xs, xe, u);
         a.y = ym + 2 * Math.sin(u * 14);
         a.fr = Math.floor(p * T * 1.6) & 1;
+        if (!a.ru && !busy(S, a.x, a.y, 'firaxa harvester')) S.add(R, a);
         a.alpha = 0.8 * Math.min(ramp(p, 0, 0.12), 1 - ramp(p, 0.88, 1));
         S.group(fs, dt, [b0, b1]);
         for (const f of fs) {

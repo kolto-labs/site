@@ -3,24 +3,18 @@ import { PageHead } from '../components/PageHead';
 import { Rule } from '../components/Scramble';
 import { Md } from '../components/Md';
 import { screenshots } from '../content/screenshots';
+import { CreditsEnd } from '../placements/credits/CreditsEnd';
 
-const OFL = 'SIL Open Font License 1.1';
-
-/** licenseFiles: the license texts served next to the fonts, from public/fonts/. */
-const CREDITS: { name: string; by: string; license: string; licenseFiles?: [string, string][]; url: string; use: string }[] = [
-  { name: 'Departure Mono', by: 'Helena Zhang', license: OFL, licenseFiles: [['text', '/fonts/DepartureMono-OFL.txt']], url: 'https://departuremono.com', use: 'Headings, menus, the text viewer and the hero scroller' },
+/** Required font notices stay available beside the self-hosted files. */
+const CREDITS: { name: string; by: string; texts: string[]; url: string; use: string }[] = [
+  { name: 'Departure Mono', by: 'Helena Zhang', texts: ['/fonts/DepartureMono-OFL.txt'], url: 'https://departuremono.com', use: 'Headings, menus and interface labels' },
   {
     name: 'IBM Plex Sans and Plex Mono',
     by: 'Mike Abbink at IBM, with Bold Monday',
-    license: OFL,
-    licenseFiles: [['Sans', '/fonts/IBMPlexSans-OFL.txt'], ['Mono', '/fonts/IBMPlexMono-OFL.txt']],
+    texts: ['/fonts/IBMPlexSans-OFL.txt', '/fonts/IBMPlexMono-OFL.txt'],
     url: 'https://github.com/IBM/plex',
     use: 'Body text and code',
   },
-  { name: 'React', by: 'Meta', license: 'MIT', url: 'https://react.dev', use: 'Rendering' },
-  { name: 'React Router', by: 'Remix and Shopify', license: 'MIT', url: 'https://reactrouter.com', use: 'Routing' },
-  { name: 'marked', by: 'Christopher Jeffrey and the MarkedJS team', license: 'MIT', url: 'https://marked.js.org', use: 'Markdown' },
-  { name: 'Vite', by: 'VoidZero and the Vite contributors', license: 'MIT', url: 'https://vite.dev', use: 'Build' },
 ];
 
 const SHOT_CREDITS = [...new Map(screenshots.map((s) => [s.sourcePage + s.credit, s])).values()];
@@ -66,14 +60,14 @@ export default function Credits() {
 
       <section className="section" aria-labelledby="credits">
         <Rule id="credits">This site</Rule>
-        <p className="muted">Fonts are self-hosted. Apart from project details from GitHub, nothing is loaded from other servers.</p>
+        <p className="muted">Fonts are self-hosted. Project details load from GitHub.</p>
         <table className="credits">
-          <caption className="sr-only">Fonts and libraries used on this site</caption>
+          <caption className="sr-only">Fonts used on this site</caption>
           <thead>
             <tr>
               <th scope="col">Work</th>
               <th scope="col">By</th>
-              <th scope="col">License</th>
+              <th scope="col">Text</th>
               <th scope="col">Used for</th>
             </tr>
           </thead>
@@ -85,19 +79,12 @@ export default function Credits() {
                 </th>
                 <td>{c.by}</td>
                 <td>
-                  {c.license}
-                  {c.licenseFiles ? (
-                    <>
-                      {' ('}
-                      {c.licenseFiles.map(([label, href], i) => (
-                        <span key={href}>
-                          {i ? ', ' : null}
-                          <a href={href}>{label}</a>
-                        </span>
-                      ))}
-                      {')'}
-                    </>
-                  ) : null}
+                  {c.texts.map((href, i) => (
+                    <span key={href}>
+                      {i ? ', ' : null}
+                      <a href={href}>{i ? `file ${i + 1}` : 'text'}</a>
+                    </span>
+                  ))}
                 </td>
                 <td>{c.use}</td>
               </tr>
@@ -122,6 +109,7 @@ export default function Credits() {
           ))}
         </ul>
       </section>
+      <CreditsEnd />
     </div>
   );
 }

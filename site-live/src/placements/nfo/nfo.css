@@ -1,0 +1,19 @@
+.nfo-rail {
+  display: block;
+  position: relative;
+  height: 12px;
+  overflow: hidden;
+  border-top: 1px solid var(--rule);
+  background: #04141c;
+}
+.nfo-rail canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+@media (max-width: 520px) {
+  .nfo-rail {
+    display: none !important;
+  }
+}

@@ -1,4 +1,4 @@
-/* ---------- NFO viewer ---------- */
+/* ---------- plain-text viewer ---------- */
 
 .nfo {
   margin: 0;
@@ -57,7 +57,7 @@
   width: fit-content;
   padding-inline: clamp(8px, 2cqw, 24px);
   font-family: var(--font-pixel);
-  /* fit 80-ish columns to the box, never smaller than 7px; below that the box scrolls */
+  /* Keep long lines readable; below 7px the box scrolls instead of shrinking further. */
   font-size: clamp(7px, calc((100cqw - 32px) / (var(--cols) * 0.63637)), 16.5px);
   line-height: 1.27273;
   color: #bfe0e8;
@@ -82,7 +82,7 @@
   font-size: 14px;
 }
 
-/* ---------- NFO dialog ---------- */
+/* ---------- project notes dialog ---------- */
 
 .nfo-dialog {
   padding: 0;

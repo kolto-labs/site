@@ -35,7 +35,7 @@
     "headline": "Life support for the Odyssey engine.",
     "sub": "We build the tools that read, patch, test and extend Knights of the Old Republic.",
     "ctas": [
-      { "label": "Browse the releases", "href": "/projects" },
+      { "label": "Play now", "href": "/play" },
       { "label": "Read the roadmap", "href": "/roadmap" }
     ]
   },

@@ -12,6 +12,7 @@
  * depend on it.
  */
 
+import type { HeroLink, SceneEvent } from './link';
 import { C, caustics, glowSprite, mulberry, sprites } from './sprites';
 
 interface Options {
@@ -74,8 +75,9 @@ interface Worker {
   goal: number;
   fill: number;
   exit: 1 | -1;
-  speed: number;
   done: boolean;
+  id: number;
+  ph: number;
 }
 interface Selkath {
   kind: 'selkath';
@@ -86,12 +88,17 @@ interface Selkath {
   goal: number;
   exit: 1 | -1;
   done: boolean;
+  id: number;
+  ph: number;
 }
 interface Swimmer {
+  e: SceneEvent;
   x: number;
   y: number;
   dir: 1 | -1;
-  speed: number;
+  free: boolean;
+  v: number;
+  t0: number;
 }
 interface Lift {
   y: number; // platform height above the dock, 0 = docked
@@ -170,9 +177,13 @@ export function startHero(opts: Options): () => void {
   // Director clocks: seconds until each kind of visitor may next appear. Each clock restarts
   // when the previous visitor leaves, so the gaps below are real empty time, not spawn rates.
   // The first worker is scripted so a fresh visit always opens with someone arriving.
-  const GAP = { worker: [25, 50], selkath: [75, 150], sub: [60, 120], shark: [150, 300], lift: [50, 90] } as const;
+  const GAP = { worker: [25, 50], selkath: [75, 150], lift: [50, 90] } as const;
   const gap = (k: keyof typeof GAP) => rand(GAP[k][0], GAP[k][1]);
-  const next = { worker: 0.8, selkath: rand(30, 50), sub: rand(9, 14), shark: rand(60, 110), lift: rand(14, 20) };
+  const next = { worker: 0.8, selkath: rand(30, 50), lift: rand(14, 20) };
+  const GAIT = { suit: { speed: 11.25, halfStride: 3.3 }, selkath: { speed: 7, halfStride: 2.7 } } as const;
+  let npc = 0;
+  let link: HeroLink | null = null;
+  let pulse: () => number = () => 0;
 
   function measure() {
     const r = host.getBoundingClientRect();
@@ -688,8 +699,9 @@ export function startHero(opts: Options): () => void {
       goal: seep.x - (fromLeft ? 12 : -1),
       fill: 0,
       exit: seep.x > AW / 2 ? 1 : -1,
-      speed: rand(10, 12.5),
       done: false,
+      id: ++npc,
+      ph: 0,
     });
   }
 
@@ -698,17 +710,21 @@ export function startHero(opts: Options): () => void {
     const side = tanks.filter((k) => (fromLeft ? k.x < AW / 2 : k.x >= AW / 2));
     const k = fromLeft ? side[side.length - 1] : side[0];
     const goal = k ? (fromLeft ? k.x + k.w + 18 : k.x - 30) : AW / 2;
-    actors.push({ kind: 'selkath', x: fromLeft ? -16 : AW + 2, dir: fromLeft ? 1 : -1, state: 'arrive', t: 0, goal, exit: fromLeft ? -1 : 1, done: false });
+    actors.push({ kind: 'selkath', x: fromLeft ? -16 : AW + 2, dir: fromLeft ? 1 : -1, state: 'arrive', t: 0, goal, exit: fromLeft ? -1 : 1, done: false, id: ++npc, ph: 0 });
   }
 
-  function walk(a: { x: number; dir: 1 | -1 }, goal: number, speed: number, dt: number): boolean {
+  function walk(a: Worker | Selkath, goal: number, k: number, dt: number): boolean {
+    const kind = a.kind === 'worker' ? 'suit' : 'selkath';
+    const g = link?.gait(kind, a.id) ?? GAIT[kind];
     const d = goal - a.x;
     a.dir = d >= 0 ? 1 : -1;
-    const step = speed * dt;
+    const step = g.speed * k * dt;
     if (Math.abs(d) <= step) {
+      a.ph += Math.abs(d) / g.halfStride;
       a.x = goal;
       return true;
     }
+    a.ph += step / g.halfStride;
     a.x += a.dir * step;
     return false;
   }
@@ -718,7 +734,7 @@ export function startHero(opts: Options): () => void {
     const dock = liftX - 11;
     switch (w.state) {
       case 'arrive':
-        if (walk(w, w.goal, w.speed, dt)) {
+        if (walk(w, w.goal, 1, dt)) {
           w.state = 'work';
           w.t = 0;
           w.dir = w.seep.x > w.x ? 1 : -1;
@@ -736,7 +752,7 @@ export function startHero(opts: Options): () => void {
         }
         break;
       case 'carry':
-        if (walk(w, w.goal, w.speed * 0.85, dt)) {
+        if (walk(w, w.goal, 0.85, dt)) {
           if (w.goal === dock && lift.state === 'docked' && lift.cargo < 2) {
             w.state = 'load';
             w.t = 0;
@@ -758,7 +774,7 @@ export function startHero(opts: Options): () => void {
         }
         break;
       case 'leave':
-        if (walk(w, w.goal, w.speed, dt)) w.done = true;
+        if (walk(w, w.goal, 1, dt)) w.done = true;
         break;
     }
   }
@@ -787,7 +803,7 @@ export function startHero(opts: Options): () => void {
       const fh = Math.round(w.fill * 4);
       if (fh > 0) px(ac, cx + 1, floorY - 3 - fh, 2, fh, C.kolto);
     } else {
-      const stride = !still && Math.floor(time * 3.4) % 2 === 0;
+      const stride = !still && (Math.floor(w.ph) & 1) === 0;
       const spr = stride ? S.walkB : S.walkA;
       ac.drawImage(w.dir === 1 ? spr.r : spr.l, x, y0);
       if (w.state === 'carry') ac.drawImage(S.can.r, w.dir === 1 ? x + 9 : x - 1, floorY - 10);
@@ -800,7 +816,7 @@ export function startHero(opts: Options): () => void {
   function updateSelkath(s: Selkath, dt: number) {
     s.t += dt;
     if (s.state === 'arrive') {
-      if (walk(s, s.goal, 7, dt)) {
+      if (walk(s, s.goal, 1, dt)) {
         s.state = 'inspect';
         s.t = 0;
       }
@@ -812,14 +828,14 @@ export function startHero(opts: Options): () => void {
         s.state = 'leave';
         s.goal = s.exit === 1 ? AW + 18 : -18;
       }
-    } else if (walk(s, s.goal, 7, dt)) {
+    } else if (walk(s, s.goal, 1, dt)) {
       s.done = true;
     }
   }
 
-  function drawSelkath(s: Selkath, time: number) {
+  function drawSelkath(s: Selkath) {
     const moving = s.state !== 'inspect';
-    const frame = moving && Math.floor(time * 2.6) % 2 === 0 ? S.selB : S.selA;
+    const frame = moving && (Math.floor(s.ph) & 1) === 0 ? S.selB : S.selA;
     const y0 = floorY - frame.h;
     const x = Math.round(s.x);
     ac.drawImage(s.dir === 1 ? frame.r : frame.l, x, y0);
@@ -871,8 +887,6 @@ export function startHero(opts: Options): () => void {
   function direct(dt: number, workers: number) {
     next.worker -= dt;
     next.selkath -= dt;
-    next.sub -= dt;
-    next.shark -= dt;
     next.lift -= dt;
     if (next.worker <= 0 && workers === 0) {
       spawnWorker(t < 2);
@@ -885,16 +899,6 @@ export function startHero(opts: Options): () => void {
     if (next.selkath <= 0 && !actors.some((a) => a.kind === 'selkath')) {
       spawnSelkath();
       next.selkath = Infinity;
-    }
-    if (next.sub <= 0 && !sub) {
-      const dir: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
-      sub = { x: dir === 1 ? -40 : AW + 40, y: rand(AH * 0.12, AH * 0.38), dir, speed: rand(14, 20) };
-      next.sub = Infinity;
-    }
-    if (next.shark <= 0 && !shark) {
-      const dir: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
-      shark = { x: dir === 1 ? -40 : AW + 40, y: rand(AH * 0.06, AH * 0.3), dir, speed: rand(13, 18) };
-      next.shark = Infinity;
     }
     if (next.lift <= 0) {
       // the plant ships canisters on its own too, drawn from the fullest right-hand tank
@@ -909,26 +913,51 @@ export function startHero(opts: Options): () => void {
   }
 
   /** A visitor left: start that kind's empty-time clock. */
-  function departed(kind: 'worker' | 'selkath' | 'sub' | 'shark') {
+  function departed(kind: 'worker' | 'selkath') {
     if (kind === 'worker' && actors.some((a) => a.kind === 'worker' && !a.done)) return;
     next[kind] = gap(kind);
   }
 
+  function swim(s: Swimmer | null, dt: number): Swimmer | null {
+    if (!s) return null;
+    const span = AW + 100;
+    const x0 = s.dir === 1 ? -40 : AW + 40;
+    if (s.v) s.x = link ? x0 + s.dir * s.v * Math.max(0, link.now() - s.t0) : s.x + s.dir * s.v * dt;
+    else if (s.free || !link) s.x += s.dir * (span / s.e.duration) * dt;
+    else s.x = x0 + s.dir * span * link.progress(s.e);
+    return s.x <= -60 || s.x >= AW + 60 ? null : s;
+  }
+
   function moveSwimmers(dt: number) {
-    if (sub) {
-      sub.x += sub.dir * sub.speed * dt;
-      if (sub.x < -60 || sub.x > AW + 60) {
-        sub = null;
-        departed('sub');
-      }
+    sub = swim(sub, dt);
+    shark = swim(shark, dt);
+  }
+
+  function scene(e: SceneEvent) {
+    const fin = e.id === 'F2';
+    const cur = fin ? shark : sub;
+    if (e.phase === 'end') {
+      if (cur && cur.e.uid === e.uid) cur.free = true;
+      return;
     }
-    if (shark) {
-      shark.x += shark.dir * shark.speed * dt;
-      if (shark.x < -60 || shark.x > AW + 60) {
-        shark = null;
-        departed('shark');
-      }
-    }
+    if (fin && shark) return;
+    const [lo, hi] = fin ? [0.06, 0.3] : [0.12, 0.38];
+    const dir = e.variant.side;
+    const x = dir === 1 ? -40 : AW + 40;
+    const s: Swimmer = { e, x, y: AH * (lo + (hi - lo) * e.variant.u), dir, free: false, v: 0, t0: 0 };
+    if (fin) {
+      s.v = rand(13, 18);
+      const peak = e.marks.find((m) => m.name === 'peak')?.at ?? e.startAt + e.duration / 2;
+      s.t0 = Math.max(e.startAt, peak - Math.abs(AW / 2 - S.sharkA.w / 2 - x) / s.v);
+      shark = s;
+    } else sub = s;
+  }
+
+  function screenX(e: SceneEvent): number | null {
+    const s = shark && shark.e.uid === e.uid ? shark : sub && sub.e.uid === e.uid ? sub : null;
+    if (!s) return null;
+    const w = s === shark ? S.sharkA.w : S.sub.w;
+    return host.getBoundingClientRect().left + (s.x + w / 2) * P;
   }
 
   /* ---------- scroller: the station's LED ticker ---------- */
@@ -963,8 +992,7 @@ export function startHero(opts: Options): () => void {
     const dt = still ? 0 : Math.max(0, Math.min(0.05, (now - last) / 1000));
     last = now;
     t += dt;
-    const pulseFn = (globalThis as { __koltoPulse?: () => number }).__koltoPulse;
-    const boost = still || !pulseFn ? 0 : Math.max(0, Math.min(1, pulseFn()));
+    const boost = still ? 0 : Math.max(0, Math.min(1, pulse()));
     if (!still && boost > 0.55 && boost - prevBoost > 0.15) {
       // a kick: the pumps thump and the seeps let go a burst of bubbles
       for (const p of pumps) for (let i = 0; i < 3; i++) addBubble(p.x + 5 + Math.random() * 4, floorY - 16, Math.random() < 0.5 ? 1 : 2);
@@ -1007,7 +1035,7 @@ export function startHero(opts: Options): () => void {
     drawSeeps(dt, t, boost, still);
     for (const a of actors) {
       if (a.kind === 'worker') drawWorker(a, t, still);
-      else drawSelkath(a, t);
+      else drawSelkath(a);
     }
     drawBubbles(dt, t);
 
@@ -1038,7 +1066,7 @@ export function startHero(opts: Options): () => void {
     // one composed moment: a worker drawing kolto at a seep, canisters waiting at the lift
     t = 4.2;
     const seep = seeps[0];
-    actors = [{ kind: 'worker', x: seep.x - 12, dir: 1, state: 'work', t: 3, seep, goal: seep.x - 12, fill: 0.6, exit: -1, speed: 0, done: false }];
+    actors = [{ kind: 'worker', x: seep.x - 12, dir: 1, state: 'work', t: 3, seep, goal: seep.x - 12, fill: 0.6, exit: -1, done: false, id: 0, ph: 0 }];
     transfer = tanks.length > 1 ? { from: -1, to: 1, pump: 0, left: 0.2 } : null;
     lift.cargo = 2;
     lift.state = 'docked';
@@ -1087,6 +1115,20 @@ export function startHero(opts: Options): () => void {
   document.addEventListener('visibilitychange', onVis);
 
   const fontReady = document.fonts?.load ? document.fonts.load(`${fontPx}px "Departure Mono"`).catch(() => undefined) : Promise.resolve();
+  if (!reduced) {
+    void import('./link')
+      .then((m) => {
+        if (destroyed) return;
+        pulse = m.pulse;
+        link = m.linkHero({
+          visible: () => visible && pageVisible && !destroyed,
+          rect: () => host.getBoundingClientRect(),
+          screenX,
+          scene,
+        });
+      })
+      .catch(() => undefined);
+  }
   void fontReady.then(() => {
     if (destroyed) return;
     started = true;
@@ -1098,6 +1140,8 @@ export function startHero(opts: Options): () => void {
 
   return () => {
     destroyed = true;
+    link?.dispose();
+    link = null;
     cancelAnimationFrame(raf);
     ro.disconnect();
     io.disconnect();

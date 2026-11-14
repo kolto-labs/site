@@ -1,0 +1,78 @@
+/* Trace strip on a frame edge. Absolute, so it never moves layout. Empty until its card is active. */
+.frame__trace-host {
+  position: absolute;
+  pointer-events: none;
+  display: block;
+  top: -5px;
+  right: 28px;
+  width: 96px;
+  height: 9px;
+  opacity: var(--trace-presence, 1);
+}
+.frame__trace {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.frame__trace-ledger {
+  position: absolute;
+  inset: 1px 0;
+  opacity: 0.3;
+  background: repeating-linear-gradient(90deg, transparent 0 10px, #5ad8ff 10px 11px, transparent 11px 16px);
+  animation: frame-ledger 12s linear infinite;
+  animation-duration: var(--trace-duration, 12s);
+  background-position-x: var(--trace-route-shift, 0px);
+  opacity: calc(0.22 + var(--trace-reading, 0) * 0.2 + var(--trace-pointer, 0) * 0.12);
+}
+.frame__trace-host::after {
+  content: '';
+  position: absolute;
+  inset: 1px 0;
+  opacity: calc(0.12 + var(--trace-reading, 0) * 0.42 + var(--trace-pointer, 0) * 0.28);
+  background: linear-gradient(90deg, transparent 0 38%, var(--trace-ink, #9bf2ff) 49%, transparent 60% 100%);
+  background-size: 240% 100%;
+  background-position: var(--trace-route-shift, 0px) 0;
+  animation: frame-current 12s linear infinite;
+  animation-duration: var(--trace-history-speed, 18s);
+  animation-direction: var(--trace-direction, normal);
+}
+.frame__trace-host[data-route-theme='kolto'] { --trace-ink: #39e5ce; --trace-direction: normal; }
+.frame__trace-host[data-route-theme='manaan'] { --trace-ink: #65c8ff; --trace-direction: reverse; }
+.frame__trace-host[data-route-theme='datapad'] { --trace-ink: #f2cb77; --trace-direction: normal; }
+.frame__trace-host[data-route-theme='dock'] { --trace-ink: #92baff; --trace-direction: reverse; }
+.frame__trace-host[data-route-theme='archive'] { --trace-ink: #e3b5ff; --trace-direction: normal; }
+.frame__trace-host[data-route-theme='beacon'] { --trace-ink: #afffa8; --trace-direction: reverse; }
+.frame__trace-host[data-route-theme='holocron'] { --trace-ink: #d9aaff; --trace-direction: alternate; }
+.frame__trace-host[data-route-theme='distress'] { --trace-ink: #ff927d; --trace-direction: reverse; }
+.frame__trace-host[data-lore-cue='harvest'] .frame__trace-ledger { opacity: 0.72; }
+.frame__trace-host[data-lore-cue='packing'] .frame__trace-ledger { opacity: 0.56; background-color: rgba(25, 227, 193, 0.18); }
+.frame__trace-host[data-lore-cue='loading'] .frame__trace-ledger { opacity: 0.7; background-size: 20px 100%; }
+.frame__trace-host[data-lore-cue='dock'] .frame__trace-ledger,
+.frame__trace-host[data-lore-cue='arrival'] .frame__trace-ledger { opacity: 0.76; background-position: 4px 0; }
+.frame__trace-host[data-lore-cue='depart'] .frame__trace-ledger { opacity: 0.62; background-position: -4px 0; }
+.frame__trace-host[data-world-state='R3'] .frame__trace-ledger { display: none; }
+.frame__trace-host[data-visible='false'] .frame__trace-ledger,
+.frame__trace-host[data-hidden='true'] .frame__trace-ledger,
+.frame__trace-host[data-visible='false']::after,
+.frame__trace-host[data-hidden='true']::after { animation-play-state: paused; }
+@keyframes frame-ledger { to { background-position-x: 32px; } }
+@keyframes frame-current { to { background-position: calc(100% + var(--trace-route-shift, 0px)) 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .frame__trace-ledger,
+  .frame__trace-host::after { animation: none; }
+  .frame__trace-ledger { opacity: 0.3; }
+  .frame__trace-host::after { opacity: 0.24; }
+}
+@media (max-width: 640px) {
+  .frame__trace-host {
+    top: 40px;
+    left: -6px;
+    right: auto;
+    width: 9px;
+    height: 72px;
+  }
+  .frame__trace-ledger { background: repeating-linear-gradient(180deg, transparent 0 10px, #5ad8ff 10px 11px, transparent 11px 16px); }
+  .frame__trace-host::after { background: linear-gradient(180deg, transparent 0 38%, var(--trace-ink, #9bf2ff) 49%, transparent 60% 100%); background-size: 100% 240%; }
+  @keyframes frame-ledger { to { background-position-y: 32px; } }
+  @keyframes frame-current { to { background-position: 0 calc(100% + var(--trace-route-shift, 0px)); } }
+}

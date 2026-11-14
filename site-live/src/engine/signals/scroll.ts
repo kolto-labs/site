@@ -12,6 +12,8 @@ export function createScroll(hub: Hub): ScrollSensor {
   let sFast = 0;
   let sMid = 0;
   let sVel = 0;
+  let sAccel = 0;
+  let lastVel = 0;
   let lastSign = 0;
   const rev = new Leaky(20);
   const deeper = new Leaky(30);
@@ -21,6 +23,7 @@ export function createScroll(hub: Hub): ScrollSensor {
   let roomDirty = true;
   let roomAt = -Infinity;
   let recheck = false;
+  let lastEdge = -Infinity;
 
   return {
     start(signal) {
@@ -39,6 +42,7 @@ export function createScroll(hub: Hub): ScrollSensor {
     stop() {},
     tick(t, dt) {
       const y = window.scrollY;
+      const moved = y !== lastY;
       const masked = t < hub.maskUntil;
       let v = 0;
       if (y !== lastY) {
@@ -52,6 +56,9 @@ export function createScroll(hub: Hub): ScrollSensor {
       sFast = ema(sFast, a, dt, 0.3);
       if (import.meta.env.DEV) sMid = ema(sMid, a, dt, 4);
       sVel = ema(sVel, v, dt, 0.3);
+      const accel = dt > 0 ? Math.abs(sVel - lastVel) / dt : 0;
+      sAccel = ema(sAccel, accel, dt, 0.5);
+      lastVel = sVel;
       if (a > 0.1) {
         const sign = v > 0 ? 1 : -1;
         if (lastSign !== 0 && sign !== lastSign) rev.hit(t);
@@ -65,6 +72,10 @@ export function createScroll(hub: Hub): ScrollSensor {
         recheck = false;
       }
       const d = clamp01(y / Math.max(1, room));
+      if (moved && !masked && (d <= 0.002 || d >= 0.998) && t - lastEdge >= 4) {
+        lastEdge = t;
+        hub.emit({ type: 'edge', t });
+      }
       if (d > dmax) dmax = d;
       if (masked) {
         if (dmax > mark) mark = dmax; // a programmatic jump is not exploration
@@ -79,6 +90,7 @@ export function createScroll(hub: Hub): ScrollSensor {
       const dr = deeper.rate(t);
       s.speed = nlog(sFast, 0.05, 8);
       s.velocity = sVel;
+      s.accel = nlog(sAccel, 0.5, 20);
       s.reversals = nsat(rr, 0.15);
       s.depth = d;
       s.newDepth = nsat(dr, 1 / 20);

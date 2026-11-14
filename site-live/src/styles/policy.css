@@ -129,3 +129,91 @@ html:has(.policy-dialog[open]) {
 .policy-keys dd {
   margin: 0;
 }
+.policy-dialog__body[data-world-state='R3'] .policy-keys kbd {
+  color: #c4d3d7;
+  border-color: #66818a;
+}
+.policy-dialog__body[data-world-state^='T'] .policy-keys kbd {
+  color: var(--prime);
+  border-color: color-mix(in srgb, var(--rule-hi), var(--prime) 55%);
+}
+
+/* ---------- Site settings: the header Settings button's dialog ---------- */
+
+.site-settings {
+  width: min(560px, calc(100vw - 24px));
+  font-size: 15px; /* the policy dialogs inherit 15px from the footer; this one sits in the header */
+  border-top: 2px solid var(--prime);
+}
+.site-settings__body section + section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule-hi);
+}
+.site-settings__body h3 {
+  margin: 0 0 10px;
+  font-family: var(--font-pixel);
+  font-size: var(--px-1);
+  color: var(--ink-hi);
+}
+.site-settings__body fieldset {
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.site-settings__body legend {
+  padding: 0;
+  margin-bottom: 4px;
+  color: var(--ink-hi);
+}
+.site-settings__opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 32px;
+  cursor: pointer;
+}
+.site-settings__opt input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--prime);
+  cursor: pointer;
+}
+.site-settings__note {
+  margin: 4px 0 0;
+  color: var(--dim);
+}
+.site-settings__note.is-idle {
+  visibility: hidden;
+}
+.site-settings__body fieldset > .btn,
+.site-settings__body section > .btn {
+  margin-top: 8px;
+}
+.site-settings__files {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 14px;
+}
+.bbs__toggle svg {
+  flex: none;
+}
+/* The header row fits the gear but not the word where it is tightest: narrow phones (the Sound
+   button keeps its word above 420px) and just above 900px, where the menu rejoins the row. */
+@media (max-width: 540px), (min-width: 901px) and (max-width: 1000px) {
+  .bbs__toggle .bbs__toggle-name--settings {
+    display: none;
+  }
+}
+
+/* No JS: the controls can't work, so the footer link's #site-settings target stays hidden. */
+@media (scripting: none) {
+  .site-settings:target {
+    display: none;
+  }
+}

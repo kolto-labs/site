@@ -43,8 +43,7 @@ export default function Join() {
       </section>
 
       <p className="section">
-        Read the <PolicyLink id="re-policy">reverse-engineering policy</PolicyLink> and <PolicyLink id="code-of-conduct">code of conduct</PolicyLink> before
-        contributing.
+        Read the <PolicyLink id="code-of-conduct">code of conduct</PolicyLink> before contributing.
       </p>
     </div>
   );

@@ -1,5 +1,5 @@
 export type Scale = readonly number[];
-export type LayerKey = 'drone' | 'pad' | 'arp' | 'bass' | 'hats' | 'kick' | 'melody' | 'cuep' | 'cuefx';
+export type LayerKey = 'drone' | 'pad' | 'arp' | 'bass' | 'hats' | 'kick' | 'ticks' | 'pulse' | 'glint' | 'melody' | 'cuep' | 'cuefx';
 
 export interface Route {
   gain: Readonly<Partial<Record<LayerKey, number>>>;
@@ -55,4 +55,5 @@ export interface ScoreProfile {
   readonly rhythms: readonly (readonly number[])[];
   readonly motifs: Readonly<Record<string, MotifDef>>;
   readonly chords?: readonly (readonly number[])[];
+  readonly centres?: Readonly<Record<string, readonly number[]>>;
 }

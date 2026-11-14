@@ -55,13 +55,18 @@ export function Scramble({ text, duration = 650 }: { text: string; duration?: nu
 
   return (
     <span ref={ref} className="scramble">
+      <span className="scramble__sizer" aria-hidden="true">
+        {text}
+      </span>
       <span className="sr-only">{text}</span>
-      <span aria-hidden="true">{shown}</span>
+      <span className="scramble__shown" aria-hidden="true">
+        {shown}
+      </span>
     </span>
   );
 }
 
-/** NFO-style section rule heading:  ══[ Label ]════════ */
+/** Terminal-inspired section rule with a readable text label. */
 export function Rule({ children, id, level = 2 }: { children: string; id?: string; level?: 2 | 3 }) {
   const Tag = level === 2 ? 'h2' : 'h3';
   return (

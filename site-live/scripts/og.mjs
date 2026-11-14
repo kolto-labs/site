@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const dist = join(root, 'dist');
+const dist = process.env.KOLTO_OUT ? resolve(process.env.KOLTO_OUT) : join(root, 'dist');
 const pub = join(root, 'public');
 const ssrEntry = ['entry-server.js', 'entry-server.mjs'].map((f) => join(root, '.ssr', f)).find(existsSync);
 const { snapshotAggregate, koltoLogo, K_PATH, SITE_URL } = await import(pathToFileURL(ssrEntry).href);

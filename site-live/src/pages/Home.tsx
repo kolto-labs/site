@@ -32,7 +32,7 @@ export default function Home() {
         <section className="section home-nfo" aria-labelledby="home-nfo">
           <Rule id="home-nfo">Kolto.txt</Rule>
           <div className="home-nfo__grid">
-            <NfoViewer title="KOLTO LABS" filename="kolto-labs.txt" text={content.homeNfo} clampRows={34} />
+            <NfoViewer title="KOLTO LABS" text={content.homeNfo} clampRows={34} />
             <aside className="home-nfo__side" aria-label="At a glance">
               <Diz />
               <div className="home-nfo__channels">

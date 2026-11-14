@@ -41,6 +41,8 @@ export function createSource(h: SourceHost & { profile: ScoreProfile }): Generat
   let kept: { R: readonly number[]; permit: number } | null = null;
   let lastFill = -9;
   let barCount = 0;
+  let depthLoad: Promise<void> | null = null;
+  let light = false;
   const dbg = { dropped: 0, shed: 0, peak: 0, log: [] as Row[] };
 
   const load = (a: number): number => live.reduce((n, x) => (x.t <= a && x.end > a ? n + x.w : n), 0);
@@ -84,7 +86,16 @@ export function createSource(h: SourceHost & { profile: ScoreProfile }): Generat
     }
     const sg = keep ? null : ctx.createGain();
     sg?.connect(to);
-    v(rig, sg ?? to, e);
+    let dest = sg ?? to;
+    let panNode: StereoPannerNode | null = null;
+    if (e.p !== undefined) {
+      panNode = ctx.createStereoPanner();
+      panNode.pan.setValueAtTime(clampN(e.p, -1, 1), e.t);
+      panNode.connect(dest);
+      dest = panNode;
+    }
+    v(rig, dest, e);
+    if (panNode) window.setTimeout(() => panNode?.disconnect(), Math.max(1000, (e.d + 2) * 1000));
     const row: Row | undefined = import.meta.env.DEV ? { t: e.t, at: now, v: e.v, l: e.l, d: e.d, w } : undefined;
     if (row) {
       dbg.log.push(row);
@@ -98,6 +109,16 @@ export function createSource(h: SourceHost & { profile: ScoreProfile }): Generat
       rig!.applyPar(b.par, b.t, b.step);
       cond!.onBar(b);
       h.bar(b.n, h.fromCx(b.t));
+      if (!depthLoad) {
+        depthLoad = Promise.all([import('./depth/form'), import('./depth/harmony'), import('./depth/layers'), import('./depth/variation')]).then(([f, y, l, v]) => {
+          const form = f.createForm(h.seed, { centres: P.centres, visit: h.visit, lite: light });
+          score.attachDepth(form, y.createHarmony(h.seed, P, form));
+          score.attachLayers(new l.Layers(h.seed, light));
+          score.attachVariation(v);
+        }).catch(() => {
+          depthLoad = null;
+        });
+      }
     },
     play(e: Ev): void {
       const to = e.inst?.dest ?? dest(rig!, e);
@@ -124,7 +145,8 @@ export function createSource(h: SourceHost & { profile: ScoreProfile }): Generat
   };
 
   const source: GeneratedSource = {
-    begin(a: SourceBegin): void {
+    begin(a: SourceBegin, at?: number): void {
+      light = a.lite;
       cap = a.lite ? 12 : 24;
       live = [];
       lpAt = 0;
@@ -165,7 +187,7 @@ export function createSource(h: SourceHost & { profile: ScoreProfile }): Generat
       score.setState(a.state ?? P.initial, true);
       score.route = a.route ?? P.home;
       rig.setRoute(score.route, ctx.currentTime, 0.01);
-      const t0 = ctx.currentTime + 0.1;
+      const t0 = Math.max(ctx.currentTime + 0.1, at ?? 0);
       tr.start(t0);
       tr.n = barCount;
       rig.music.gain.setValueAtTime(0.0001, ctx.currentTime);
@@ -173,11 +195,10 @@ export function createSource(h: SourceHost & { profile: ScoreProfile }): Generat
       wake();
       cond.ambient(a.ambient);
     },
-    end(): void {
+    end(at?: number, fade = 0.3): void {
       cond?.endAmbient();
       if (rig && !rig.gone) {
-        rig.duck(0, 0.2);
-        rig.retire(ctx.currentTime + 0.6);
+        rig.retire(Math.max(ctx.currentTime, at ?? 0), fade);
       }
       if (tr) barCount = tr.n;
       tr?.jobs.splice(0);
@@ -219,7 +240,7 @@ export function createSource(h: SourceHost & { profile: ScoreProfile }): Generat
     },
     blip(kind: 'ok' | 'tick'): void {
       const to = shared.ui;
-      const u: Rig = { ...shared, kicks: [], padL: to, padR: to, arpF: to, hatF: to, layer: () => to };
+      const u: Rig = { ...shared, wd: rig?.wd ?? [], kicks: [], padL: to, padR: to, arpF: to, hatF: to, layer: () => to };
       const t = ctx.currentTime + 0.01;
       if (kind === 'ok') {
         for (const [dt, g, f] of [[0, 0.6, 784], [0.1, 0.5, 1175], [0.27, 0.15, 1175]]) VOICES.ping(u, to, { t: t + dt, v: 'ping', m: 0, d: 0.3, g, l: 'cuefx', f });

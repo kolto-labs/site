@@ -56,15 +56,12 @@ export function projectNfo(p: ProjectView): string {
     ['Version', p.version ?? 'unreleased'],
     ['Status', statusLabel(p.status)],
     ['Language', p.lang],
-    ['License', p.license],
-    ['Supplied by', 'the community'],
   ];
   for (let i = 0; i < pairs.length; i += 2) {
     const a = leader(pairs[i][0], pairs[i][1]);
     const b = pairs[i + 1] ? leader(pairs[i + 1][0], pairs[i + 1][1], 12) : '';
     L.push(`  ${a.padEnd(38)}${b}`);
   }
-  if (p.repo) L.push(`  ${leader('Protection', "None. It's open source.")}`);
   L.push(`  ${leader('Repository', p.repo ? p.repo.replace(/^https?:\/\//, '') : 'not public yet')}`);
   const notes = p.description || (p.repo ? 'No description on GitHub yet.' : '');
   if (notes) {

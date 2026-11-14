@@ -1,5 +1,7 @@
 import type { Rng } from '../core/rng';
 import type { WorldStateId } from '../core/types';
+import { COL } from './palette.mjs';
+export { COL };
 
 export type Kind = 'firaxa' | 'selkath' | 'harvester' | 'sub' | 'giant' | 'crew' | 'loader' | 'droid' | 'ship';
 
@@ -72,17 +74,6 @@ export interface Fx {
 export const X = {
   ring: 0, flash: 1, tick: 2, card: 3, token: 4, lamp: 5, dust: 6, rect: 7, crate: 8, judge: 9,
 } as const;
-
-export const COL = {
-  void: '#05070a',
-  kolto: '#19e3c1',
-  cyan: '#5ad8ff',
-  phos: '#7dff9a',
-  amber: '#ffb000',
-  mag: '#ff4fd8',
-  rim: '#1f3d47',
-  white: '#e8fbff',
-};
 
 export const WL = 59;
 export const FL = 152;

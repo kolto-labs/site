@@ -286,13 +286,11 @@ async function gatherRepo(api, raw, r, old, stats, fail, pend) {
   if (weekly.status === 'fulfilled' && (weekly.value?.status === 202 || weekly.value?.status === 204)) pend();
   const os = old?.stats;
   const rel = rels.status === 'fulfilled' ? summariseReleases(rels.value.json) : null;
-  const spdx = r.license?.spdx_id && r.license.spdx_id !== 'NOASSERTION' ? r.license.spdx_id : null;
   const got = (x) => x.status === 'fulfilled' && x.value;
   const data = {
     name: r.name,
     description: r.description || null,
     language: r.language || null,
-    license: spdx,
     stars: Number(r.stargazers_count) || 0,
     pushedAt: r.pushed_at || null,
     url: r.html_url,

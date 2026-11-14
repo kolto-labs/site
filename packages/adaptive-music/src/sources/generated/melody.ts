@@ -131,7 +131,8 @@ export class Melody {
   count = 0;
   lastOp = -1;
   lastMaxSim = 0;
-  constructor(private rm: Rng, ri: Rng) {
+  private rm!: Rng;
+  constructor(ri: Rng) {
     this.dna = [drawMotif(ri), drawMotif(ri), drawMotif(ri), drawMotif(ri)];
   }
 
@@ -228,7 +229,9 @@ export class Melody {
     return { s: (strong ? fit / strong : 0.5) + 0.6 * smooth - 1.5 * ms + 0.3, ms };
   }
 
-  phrase(c: MelCtx): Nt[] {
+  /** `r` is a stream addressed by the phrase's first bar, so earlier draws elsewhere never shift it. */
+  phrase(c: MelCtx, r: Rng): Nt[] {
+    this.rm = r;
     this.count++;
     type Cd = { n: Nt[]; s: number; ms: number };
     const recall = this.count - this.recalled >= 8;

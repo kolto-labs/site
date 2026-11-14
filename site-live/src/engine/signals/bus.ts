@@ -16,6 +16,9 @@ export interface SignalFrame {
   t: number;
   pointer: {
     x: number; y: number;              // 0..1 of the viewport, fast-smoothed
+    slowX: number; slowY: number;       // 0..1 of the viewport, slow-smoothed
+    headingX: number; headingY: number; // unit direction; zero when stationary
+    headingStrength: number;            // 0..1
     speed: number; accel: number; jerk: number;   // normalised 0..1
     straightness: number;              // 0..1
     hover: number;                     // normalised 0..1 (distinct interactive elements entered)
@@ -23,9 +26,9 @@ export interface SignalFrame {
     still: number;                     // seconds since the pointer last moved >2 px
     inside: string | null;             // id of the registered view under the pointer
   };
-  clicks: { fast: number; slow: number; regularity: number };   // normalised
+  clicks: { fast: number; slow: number; regularity: number; medianIci: number; bins: readonly [number, number, number] }; // normalised
   keys: { rate: number; typing: boolean; keyboardNav: boolean }; // no key identities, ever
-  scroll: { speed: number; velocity: number; reversals: number; depth: number; newDepth: number };
+  scroll: { speed: number; velocity: number; accel: number; reversals: number; depth: number; newDepth: number };
   dwell: { section: number; route: number; sectionId: string | null; g: number }; // section, route: s with presence
   route: { key: PageKey; rate: number; newRoutes: number; entropy: number; history: readonly PageKey[] };
   reading: number;
@@ -42,7 +45,9 @@ export interface SignalFrame {
 export type BusEvent =
   | { type: 'route'; t: number; from: PageKey | null; to: PageKey; pop: boolean }
   | { type: 'click'; t: number }
+  | { type: 'hover'; t: number; kind: 'link' | 'button' | 'disclosure' | 'card' }
   | { type: 'section'; t: number; id: string | null }
+  | { type: 'edge'; t: number }
   | { type: 'presence'; t: number; band: SignalFrame['presence']['band'] }
   | { type: 'visibility'; t: number; visible: boolean }
   | { type: 'reducedMotion'; t: number; on: boolean };
@@ -53,8 +58,10 @@ export interface InteractionBus {
   /** Called after each 20 Hz feature tick (paused while hidden). */
   subscribe(fn: (f: Readonly<SignalFrame>) => void): Unsubscribe;
   on<K extends BusEvent['type']>(type: K, fn: (e: Extract<BusEvent, { type: K }>) => void): Unsubscribe;
+}
 
-  // Producers: App shell and hotkeys only. Placements must not call these.
+/** Mutation methods available to the application shell and sensor owners only. */
+export interface SignalProducers {
   notifyRoute(to: PageKey, pop: boolean): void;
   markProgrammaticScroll(ms?: number /* default 600 */): void;
   notifyHotkey(kind: 'nav' | 'toggle'): void;
@@ -101,7 +108,7 @@ export interface Sensor {
   tick(t: number, dt: number): void;
 }
 
-export interface BusInternal extends InteractionBus {
+export interface BusInternal extends InteractionBus, SignalProducers {
   readonly clock: EngineClock;
   /** Installs listeners and starts the tick. Idempotent. `route` sets the first route. */
   start(opts?: { route?: PageKey }): void;
@@ -116,10 +123,10 @@ const TICK_MS = 50;
 function neutralFrame(): SignalFrame {
   return {
     t: 0,
-    pointer: { x: 0.5, y: 0.5, speed: 0, accel: 0, jerk: 0, straightness: 0.5, hover: 0, fine: true, still: 0, inside: null },
-    clicks: { fast: 0, slow: 0, regularity: 0.5 },
+    pointer: { x: 0.5, y: 0.5, slowX: 0.5, slowY: 0.5, headingX: 0, headingY: 0, headingStrength: 0, speed: 0, accel: 0, jerk: 0, straightness: 0.5, hover: 0, fine: true, still: 0, inside: null },
+    clicks: { fast: 0, slow: 0, regularity: 0.5, medianIci: 0, bins: [0, 0, 0] },
     keys: { rate: 0, typing: false, keyboardNav: false },
-    scroll: { speed: 0, velocity: 0, reversals: 0, depth: 0, newDepth: 0 },
+    scroll: { speed: 0, velocity: 0, accel: 0, reversals: 0, depth: 0, newDepth: 0 },
     dwell: { section: 0, route: 0, sectionId: null, g: 0 },
     route: { key: 'Home', rate: 0, newRoutes: 0, entropy: 0, history: [] },
     reading: 0,
@@ -145,7 +152,9 @@ export function createBus(clock: EngineClock): BusInternal {
   const ems: Emitters = {
     route: new Emitter(),
     click: new Emitter(),
+    hover: new Emitter(),
     section: new Emitter(),
+    edge: new Emitter(),
     presence: new Emitter(),
     visibility: new Emitter(),
     reducedMotion: new Emitter(),

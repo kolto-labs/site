@@ -39,3 +39,5 @@ Keep these directories together: the Vite and TypeScript configurations resolve 
 ## Import provenance
 
 Imported on 2026-11-14 from the current local site source, including its existing uncommitted site changes. The source baseline was local commit `b0e65db`. The deployed website currently serves an older restored bundle with the suffix `r20261013-restore`; this import is not claimed to reproduce that deployment byte for byte. Importing this repository does not deploy the website.
+
+The production UI and audio source captured in local commit `00a8fdb` was subsequently restored to retain the deployed settings dialog, audio routing, and scene integration. The newer Play route and current content are retained. Source integration fixes are included; the original local archive and history are unchanged.

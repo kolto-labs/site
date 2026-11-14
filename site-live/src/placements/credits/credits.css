@@ -1,0 +1,10 @@
+.credits-end {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  margin: 3rem auto 0;
+  aspect-ratio: 320 / 75;
+  opacity: 0.85;
+  image-rendering: pixelated;
+  pointer-events: none;
+}

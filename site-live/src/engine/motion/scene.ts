@@ -54,6 +54,7 @@ function stillSim(state: WorldStateId): Sim {
 
 export interface Scene {
   mount(canvas: HTMLCanvasElement, o: MountOpts): Placement;
+  dispose(): void;
 }
 
 export function createScene(d: MotionDeps): Scene {
@@ -63,12 +64,15 @@ export function createScene(d: MotionDeps): Scene {
   const ptr: Ptr = { x: 0, y: 0, vx: 0, active: false };
   const bt: Beat = { bpm: 0, pos: 0 };
   const views = new Set<View>();
+  const placements = new Set<() => void>();
+  const effectiveCrop = (crop: number): number => world.state[0] === 'T' ? CROP.rift : crop;
   let reduced = bus.frame().env.reducedMotion;
   let cur: View | null = null;
   let running = false;
   let lastT = 0;
   let lastX = 0;
   let tick = 0;
+  let disposed = false;
 
   const env: Env = {
     seed: world.seed,
@@ -93,18 +97,20 @@ export function createScene(d: MotionDeps): Scene {
     reduced: () => reduced,
   };
   const sim = createSim(env, MOTION, world.ambient, import.meta.env.DEV ? (m) => console.error(m) : undefined);
-  dir.on((e) => (e.phase === 'start' ? sim.start(e) : sim.end(e)));
-  bus.on('reducedMotion', (e) => {
+  const unsubs = [
+    dir.on((e) => (e.phase === 'start' ? sim.start(e) : sim.end(e))),
+    bus.on('reducedMotion', (e) => {
     reduced = e.on;
     if (reduced) {
       sim.reset();
       sim.open = 1;
       for (const v of views) paint(v);
     } else ensure();
-  });
-  clock.onVisibility((vis) => {
+    }),
+    clock.onVisibility((vis) => {
     if (vis) ensure();
-  });
+    }),
+  ];
 
   function free(v: View): void {
     if (!v.bg) return;
@@ -113,11 +119,13 @@ export function createScene(d: MotionDeps): Scene {
   }
 
   function size(v: View): boolean {
+    // Trial states live in the Rift, even when a placement was designed for the city crop.
+    const crop = effectiveCrop(v.crop);
     const r = Math.max(1, devicePixelRatio || 1);
     const w = v.canvas.clientWidth * r;
     const h = v.canvas.clientHeight * r;
     if (w < 8 || h < 8) return false;
-    const sh = STAGE_H[v.crop];
+    const sh = STAGE_H[crop];
     let P = cl(Math.floor(Math.min(w / L.W, h / sh)), 1, 4 * Math.ceil(r));
     P = Math.max(P, Math.ceil(w / 640));
     const W = Math.ceil(w / P);
@@ -127,7 +135,7 @@ export function createScene(d: MotionDeps): Scene {
       v.canvas.width = W;
       v.canvas.height = H;
       v.canvas.style.imageRendering = 'pixelated';
-      v.bg = buildBg(xf(W, H, v.crop), world.state);
+      v.bg = buildBg(xf(W, H, crop), world.state);
     }
     return true;
   }
@@ -217,7 +225,7 @@ export function createScene(d: MotionDeps): Scene {
       }
       const un = dir.views.register({
         id: o.id,
-        renders: ids(crop),
+        renders: ids(effectiveCrop(crop)),
         visible: () => v.vis && v.ok,
         screenX(e) {
           const a = sim.primary(e.uid);
@@ -249,12 +257,21 @@ export function createScene(d: MotionDeps): Scene {
         canvas.removeEventListener('contextrestored', relayout);
         o.signal?.removeEventListener('abort', dispose);
         views.delete(v);
+        placements.delete(dispose);
         free(v);
         if (cur === v) cur = null;
       };
+      placements.add(dispose);
       o.signal?.addEventListener('abort', dispose);
       relayout();
       return { dispose, redraw: relayout };
+    },
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      for (const unsub of unsubs) unsub();
+      for (const dispose of placements) dispose();
+      running = false;
     },
   };
   if (import.meta.env.DEV) Object.assign(globalThis, { __koltoMotion: { sim, views, api, paint } });

@@ -88,7 +88,7 @@ Deploy with `npm run build && npm run deploy`.
   - pauses when the hero is offscreen or the tab is hidden
   - draws one still frame under `prefers-reduced-motion`
 - **Logo:** a pixel face in `src/lib/blockfont.ts`. It is exported three ways: CP437 half-block text, one merged SVG path (used as a CSS mask, so there are no seams), and the favicon K. Palette cycling is a gradient that scrolls behind the mask.
-- **Sound:** `src/lib/audio.ts` is a procedural 4-channel chiptune plus UI blips, all WebAudio with no audio files. It is off on every visit and toggled with `M` or the Sound button. Blips play only while sound is on.
+- **Sound:** `src/lib/audio.ts` is a procedural 4-channel chiptune plus UI blips, all WebAudio with no audio files. It defaults to on for new visitors and is toggled with `M` or the Sound button. A one-year preference cookie and localStorage remember explicit changes. Browser autoplay policies may delay playback until the first interaction. Blips play only while sound is on.
 - **Hotkeys:** `src/lib/hotkeys.ts` gives one single key per menu item (J too when the Join page is on), H for home, M for sound and C for CRT. They are ignored while typing in a field, while a modal is open, or when a modifier key is held.
 - **CRT overlay:** scanlines and a vignette. Off by default; the choice is saved in `localStorage`.
 - **Fonts:** Departure Mono (SIL OFL 1.1, vendored in `src/assets/fonts/`) for chrome, the NFO and headings. IBM Plex Sans and Plex Mono (SIL OFL 1.1, from `@fontsource`, latin subsets only) for prose and code. Credits are on `/credits#credits`.

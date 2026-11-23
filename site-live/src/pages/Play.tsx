@@ -14,7 +14,7 @@ export default function Play() {
       <PageHead
         dir="play"
         title="Play KOTOR"
-        lede={<p>{PLAY_RUNTIME_URL ? 'Kolto Tank is ready to play.' : play.lede}</p>}
+        lede={<p>{PLAY_RUNTIME_URL ? 'Project Telos is ready to play.' : play.lede}</p>}
       />
       <div className="doc__body narrow">
         {PLAY_RUNTIME_URL ? (
@@ -27,7 +27,7 @@ export default function Play() {
                 target="_blank"
                 rel="noreferrer"
               >
-                Play Kolto Tank
+                Play Project Telos
               </a>
             </div>
           </section>
@@ -39,8 +39,8 @@ export default function Play() {
           </section>
         ))}
         <div className="btn-row">
-          <Link className={PLAY_RUNTIME_URL ? 'btn' : 'btn btn--primary'} to="/projects/#kolto-tank">
-            About Kolto Tank
+          <Link className={PLAY_RUNTIME_URL ? 'btn' : 'btn btn--primary'} to="/projects/#project-telos">
+            About Project Telos
           </Link>
           <Link className="btn" to="/roadmap/">
             Roadmap

@@ -78,7 +78,7 @@ ${releases.map((p) => `  <entry><title>${xml(p.name)} ${xml(p.release.tag)}</tit
 
 const statusWord = { released: 'released', 'in-development': 'in development', planned: 'planned', public: 'public repository' };
 const projectLine = (p) =>
-  `- ${p.repo ? `[${p.name}](${p.repo})` : p.name} (${statusWord[p.status]}; ${p.lang}; ${p.license}${p.version ? `; v${p.version}` : ''}):${p.tagline ? ` ${p.tagline.replace(/[^.!?:]$/, '$&.')}` : ''}${p.description && p.description !== p.tagline ? ` ${plain(p.description)}` : ''}`;
+  `- ${p.repo ? `[${p.name}](${p.repo})` : p.name} (${statusWord[p.status]}; ${p.lang}${p.version ? `; v${p.version}` : ''}):${p.tagline ? ` ${p.tagline.replace(/[^.!?:]$/, '$&.')}` : ''}${p.description && p.description !== p.tagline ? ` ${plain(p.description)}` : ''}`;
 const llms = `# Kolto Labs
 
 > ${content.press.boilerplateShort} Life support for the Odyssey engine.

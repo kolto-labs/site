@@ -47,7 +47,7 @@ body{font-family:D;color:#cfe6ec;position:relative}
 <div class="tag">Life support for the Odyssey engine.</div>
 <div class="info"><b>RELEASED</b> <i>.....</i> ${esc(released.join(' / '))}
 <b>BUILDING</b> <i>.....</i> ${esc(building.join(' / '))}
-<b>PROTECTION</b> <i>...</i> <span class="ok">None. It's open source.</span></div>
+<b>PROTECTION</b> <i>...</i> <span class="ok">None.</span></div>
 <div class="url">${esc(host)}</div>
 </body></html>`;
 

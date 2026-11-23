@@ -54,9 +54,9 @@ export default function Projects() {
   const aggregate = useProjects({ stats: true });
   const { listed, lab } = aggregate;
   const forest = useMemo(() => buildDependencyForest(aggregate), [aggregate]);
-  const labRoots = forest.filter((n) => n.lab && n.project.slug !== 'kolto-tank');
-  const mainRoots = forest.filter((n) => n.lab && n.project.slug === 'kolto-tank');
-  const jumpList = [...[...listed, ...lab].filter((x) => x.slug === 'kolto-tank'), ...[...listed, ...lab].filter((x) => x.slug !== 'kolto-tank')];
+  const labRoots = forest.filter((n) => n.lab && n.project.slug !== 'project-telos');
+  const mainRoots = forest.filter((n) => n.lab && n.project.slug === 'project-telos');
+  const jumpList = [...[...listed, ...lab].filter((x) => x.slug === 'project-telos'), ...[...listed, ...lab].filter((x) => x.slug !== 'project-telos')];
   return (
     <div className="page">
       <PageHead dir="projects" title="Projects" />
@@ -69,8 +69,8 @@ export default function Projects() {
         ))}
       </nav>
       {mainRoots.length ? (
-        <section className="section" aria-labelledby="grp-main">
-          <Rule id="grp-main">Kolto Tank: in development</Rule>
+        <section id="kolto-tank" className="section" aria-labelledby="grp-main">
+          <Rule id="grp-main">Project Telos: in development</Rule>
           <ul className="release-stack tree-roots">
             {mainRoots.map((n) => (
               <li key={n.project.slug}>

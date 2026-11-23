@@ -18,8 +18,8 @@ export default function Home() {
   const { listed, lab } = useProjects();
   const released = listed.filter((p) => p.status === 'released');
   const onGithub = listed.filter((p) => p.status !== 'released');
-  const tank = lab.find((p) => p.slug === 'kolto-tank');
-  const inDev = lab.filter((p) => p.status === 'in-development' && p.slug !== 'kolto-tank');
+  const telos = lab.find((p) => p.slug === 'project-telos');
+  const inDev = lab.filter((p) => p.status === 'in-development' && p.slug !== 'project-telos');
   const planned = lab.filter((p) => p.status === 'planned');
   const greetNames = [...content.greets.priorArt.map((g) => g.name), ...content.greets.communities.map((c) => c.name)];
 
@@ -43,16 +43,16 @@ export default function Home() {
           </div>
         </section>
 
-        {tank ? (
+        {telos ? (
           <section className="section" aria-labelledby="home-tank">
-            <Rule id="home-tank">Kolto Tank</Rule>
-            <Md source={tank.description} />
+            <Rule id="home-tank">Project Telos</Rule>
+            <Md source={telos.description} />
             <div className="btn-row">
               <Link className="btn btn--primary" to="/play/">
                 Play in your browser
               </Link>
-              <Link className="btn" to="/projects/#kolto-tank">
-                About Kolto Tank
+              <Link className="btn" to="/projects/#project-telos">
+                About Project Telos
               </Link>
             </div>
           </section>

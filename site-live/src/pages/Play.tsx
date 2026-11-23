@@ -14,7 +14,7 @@ export default function Play() {
       <PageHead
         dir="play"
         title="Play KOTOR"
-        lede={<p>{PLAY_RUNTIME_URL ? 'Kolto Tank is ready to play.' : play.lede}</p>}
+        lede={<p>{PLAY_RUNTIME_URL ? 'Choose an engine and start Kolto Tank with your own copy of KOTOR.' : play.lede}</p>}
       />
       <div className="doc__body narrow">
         {PLAY_RUNTIME_URL ? (

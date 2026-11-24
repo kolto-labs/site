@@ -389,6 +389,7 @@
       "a": "Basically nowhere. This is a fan project that adheres to the aesthetic of my own personal nostalgia from the 2000s era."
     },
     {
+      "id": "donations",
       "q": "Do you take donations?",
       "a": "We aren't set up to. The most useful thing you can give us is a bug report with steps to reproduce it."
     },
@@ -560,5 +561,15 @@
       "channel": "stable",
       "desc": "Tagged releases on GitHub."
     }
-  ]
+  ],
+  "support": {
+    "faq": "Yes, quietly. Kolto Labs stays non-commercial, so there are no tiers, rewards or early access. Money pays for hosting and CI. If you want to chip in: {links}. A bug report with steps to reproduce still helps more.",
+    "links": [
+      { "name": "GitHub Sponsors", "url": null },
+      { "name": "Open Collective", "url": null },
+      { "name": "Ko-fi", "url": null },
+      { "name": "Buy Me a Coffee", "url": null },
+      { "name": "Patreon", "url": null }
+    ]
+  }
 }

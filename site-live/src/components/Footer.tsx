@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { LINKS } from '../content';
+import { LINKS, SUPPORT_LINKS } from '../content';
 import { MENU } from './Nav';
 import { hrefFor } from '../lib/seo';
 import { PolicyDialogs, PolicyLink } from './Policies';
@@ -15,6 +15,12 @@ export function Footer() {
           <p className="foot__tag">Life support for the Odyssey engine.</p>
           <p className="foot__links">
             <a href={LINKS.github}>GitHub</a>
+            {SUPPORT_LINKS.length > 0 && (
+              <>
+                {' · '}
+                <Link to="/faq/#donations">Support</Link>
+              </>
+            )}
           </p>
         </div>
         <nav className="foot__nav" aria-label="Footer">

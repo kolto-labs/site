@@ -26,7 +26,20 @@ function withoutJoin(c: SiteContent): SiteContent {
   };
 }
 
-export const content = PAGES.join ? full : withoutJoin(full);
+/** Donation links that are actually live. Empty means no Support link and the original FAQ answer. */
+export const SUPPORT_LINKS = (full.support?.links ?? []).filter(
+  (l): l is { name: string; url: string } => typeof l.url === 'string' && l.url.length > 0,
+);
+
+/** Once a link is live, the `donations` FAQ entry lists them, so the page and its JSON-LD agree. */
+function withSupport(c: SiteContent): SiteContent {
+  if (!c.support || SUPPORT_LINKS.length === 0) return c;
+  const list = SUPPORT_LINKS.map((l) => `[${l.name}](${l.url})`).join(' · ');
+  const a = c.support.faq.replace('{links}', list);
+  return { ...c, faq: c.faq.map((f) => (f.id === 'donations' ? { ...f, a } : f)) };
+}
+
+export const content = withSupport(PAGES.join ? full : withoutJoin(full));
 
 /** Canonical origin. Single place to change after deploy (content.siteUrl wins). */
 export const SITE_URL = (content.siteUrl || 'https://kolto-labs.org').replace(/\/+$/, '');

@@ -569,7 +569,7 @@
       { "name": "Open Collective", "url": null },
       { "name": "Ko-fi", "url": null },
       { "name": "Buy Me a Coffee", "url": null },
-      { "name": "Patreon", "url": null }
+      { "name": "Patreon", "url": "https://www.patreon.com/koltolabs" }
     ]
   }
 }

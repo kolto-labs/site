@@ -75,7 +75,13 @@ export interface SiteContent {
   about: { sections: { id: string; heading: string; body: string }[] };
   projects: Project[];
   roadmap: Phase[];
-  faq: { q: string; a: string }[];
+  faq: { id?: string; q: string; a: string }[];
+  /** Optional donation links. Nothing renders until at least one url is set. */
+  support?: {
+    /** FAQ answer used for the `donations` entry once a link is live; `{links}` is replaced. */
+    faq: string;
+    links: { name: string; url: string | null }[];
+  };
   play?: { lede: string; sections: { id: string; heading: string; body: string }[] };
   join: {
     intro: string;

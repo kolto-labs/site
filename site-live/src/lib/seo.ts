@@ -16,7 +16,7 @@ export const normalizePath = (pathname: string) => {
 };
 
 const FALLBACK_META: Record<string, { title: string; description: string }> = {
-  '/': { title: 'Kolto Labs — Life support for the Odyssey engine', description: 'Open-source tools for KotOR I & II.' },
+  '/': { title: 'Kolto Labs — Life support for the Odyssey engine', description: 'Tools for KotOR I & II.' },
   '/404': { title: 'File not found — Kolto Labs', description: 'That page does not exist.' },
 };
 
@@ -84,9 +84,6 @@ function projectsLd() {
       creativeWorkStatus: p.status === 'in-development' ? 'In development' : p.status === 'planned' ? 'Planned' : 'Published',
       keywords: 'KotOR, Knights of the Old Republic, Odyssey engine, modding',
     };
-    // only real SPDX identifiers become licence URLs (skips "TBD", "Follows upstream", ...)
-    const spdx = p.license?.split(/\s*(?:,|\/|\bOR\b|\bAND\b)\s*/)[0];
-    if (spdx && /^[A-Za-z0-9.+-]+$/.test(spdx) && !/^tbd$/i.test(spdx)) ld.license = `https://spdx.org/licenses/${spdx}.html`;
     if (p.repo) ld.codeRepository = p.repo;
     if (p.version) ld.version = p.version;
     return ld;

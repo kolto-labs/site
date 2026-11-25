@@ -3,15 +3,15 @@
   "meta": {
     "/": {
       "title": "Kolto Labs — Life support for the Odyssey engine",
-      "description": "Open-source tools, file formats, a script extender and a test harness for Star Wars: Knights of the Old Republic I & II modding and reverse engineering."
+      "description": "Tools, file formats, a script extender and a test harness for Star Wars: Knights of the Old Republic I & II modding and reverse engineering."
     },
     "/about": {
       "title": "About — Kolto Labs",
-      "description": "Kolto Labs is an independent, non-commercial fan project. We build open-source tools for KotOR I and II."
+      "description": "Kolto Labs is an independent, non-commercial fan project. We build tools for KotOR I and II."
     },
     "/projects": {
       "title": "Projects — Kolto Labs",
-      "description": "kq, kotor-formats, and the in-development Hyperstim, Adrenal and Kolto Tank."
+      "description": "kq, kotor-formats, and the in-development Hyperstim, Adrenal and Project Telos."
     },
     "/roadmap": {
       "title": "Roadmap — Kolto Labs",
@@ -31,7 +31,7 @@
     }
   },
   "hero": {
-    "kicker": "Open-source kolto for KotOR I & II",
+    "kicker": "Kolto for KotOR I & II",
     "headline": "Life support for the Odyssey engine.",
     "sub": "We build the tools that read, patch, test and extend Knights of the Old Republic.",
     "ctas": [
@@ -39,19 +39,19 @@
       { "label": "Read the roadmap", "href": "/roadmap" }
     ]
   },
-  "homeNfo": "                K O L T O   L A B S   P R E S E N T S\n\n        Life support for the Odyssey engine  ·  KotOR I & II\n\n  ─────────────────────────[ RELEASE NOTES ]─────────────────────────\n\n  Two games from 2003 and 2004 still have a living modding scene.\n\n  ─────────────────────────────[ STATUS ]────────────────────────────\n\n  kq ............... released   query an install like plain text\n  kotor-formats .... released   one copy of the byte layouts\n  hyperstim ........ in dev     the script extender\n  adrenal .......... in dev     scripting for mods\n  kolto tank ....... in dev     testing for mods\n\n  ───────────────────────────[ PROTECTION ]──────────────────────────\n\n  None. It's open source.\n",
+  "homeNfo": "                K O L T O   L A B S   P R E S E N T S\n\n        Life support for the Odyssey engine  ·  KotOR I & II\n\n  ─────────────────────────[ RELEASE NOTES ]─────────────────────────\n\n  Two games from 2003 and 2004 still have a living modding scene.\n\n  ─────────────────────────────[ STATUS ]────────────────────────────\n\n  kq ............... released   query an install like plain text\n  kotor-formats .... released   one copy of the byte layouts\n  hyperstim ........ in dev     the script extender\n  adrenal .......... in dev     scripting for mods\n  project telos .... in dev     testing for mods\n\n  ───────────────────────────[ PROTECTION ]──────────────────────────\n\n  None.\n",
   "disclaimer": "Kolto Labs is an independent, **non-commercial** fan project. It is **not affiliated with, endorsed by, or sponsored by** Lucasfilm, Disney, BioWare, Electronic Arts, Obsidian, Aspyr or Saber Interactive. Star Wars, Knights of the Old Republic and related marks belong to their owners. Our repositories contain **no game assets or copyrighted game code**. You need a **legally obtained copy** of the games. We do not condone piracy.",
   "about": {
     "sections": [
       {
         "id": "what",
         "heading": "What Kolto Labs is",
-        "body": "Kolto is the healing medium of the Old Republic. Kolto Labs builds open-source tools for the Odyssey-engine games."
+        "body": "Kolto is the healing medium of the Old Republic. Kolto Labs builds tools for the Odyssey-engine games."
       },
       {
         "id": "why",
         "heading": "Why we exist",
-        "body": "Our released projects are MIT-licensed. Each has one repository, and bugs and feature requests go in its public issues."
+        "body": "Each released project has one repository, and bugs and feature requests go in its public issues."
       },
       {
         "id": "re",
@@ -145,12 +145,12 @@
     },
     {
       "phase": "Phase 1",
-      "title": "Hyperstim and Kolto Tank",
+      "title": "Hyperstim and Project Telos",
       "status": "active",
       "progress": null,
       "items": [
         { "text": "Hyperstim", "done": false },
-        { "text": "Kolto Tank", "done": false }
+        { "text": "Project Telos", "done": false }
       ]
     },
     {
@@ -216,19 +216,13 @@
         "by": "stoffe",
         "url": "https://deadlystream.com",
         "why": "The installer that made compatible mods possible."
-      },
-      {
-        "name": "xoreos",
-        "by": null,
-        "url": "https://xoreos.org",
-        "why": "Open reimplementation research for BioWare's engines."
       }
     ],
-    "scroller": "KOLTO LABS PRESENTS ... LIFE SUPPORT FOR THE ODYSSEY ENGINE ... THANKS TO DEADLY STREAM, XOREOS AND EVERY MODDER WHO KEPT THESE GAMES ALIVE ..."
+    "scroller": "KOLTO LABS PRESENTS ... LIFE SUPPORT FOR THE ODYSSEY ENGINE ... THANKS TO DEADLY STREAM AND EVERY MODDER WHO KEPT THESE GAMES ALIVE ..."
   },
   "press": {
-    "boilerplateShort": "Kolto Labs builds open-source tools for Star Wars: Knights of the Old Republic I & II.",
-    "boilerplateLong": "Kolto Labs is an independent, non-commercial open-source collective building file-format libraries, command-line tools, a script extender and a test harness for the Odyssey engine."
+    "boilerplateShort": "Kolto Labs builds tools for Star Wars: Knights of the Old Republic I & II.",
+    "boilerplateLong": "Kolto Labs is an independent, non-commercial collective building file-format libraries, command-line tools, a script extender and a test harness for the Odyssey engine."
   },
   "releaseChannels": [
     { "name": "Medpac", "channel": "stable", "desc": "Tagged releases." }

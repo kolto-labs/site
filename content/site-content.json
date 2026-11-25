@@ -566,7 +566,7 @@
     "faq": "Yes, quietly. Kolto Labs stays non-commercial, so there are no tiers, rewards or early access. Money pays for hosting and CI. If you want to chip in: {links}. A bug report with steps to reproduce still helps more.",
     "links": [
       { "name": "GitHub Sponsors", "url": null },
-      { "name": "Open Collective", "url": null },
+      { "name": "Open Collective", "url": "https://opencollective.com/kolto-labs" },
       { "name": "Ko-fi", "url": null },
       { "name": "Buy Me a Coffee", "url": null },
       { "name": "Patreon", "url": "https://www.patreon.com/koltolabs" }
